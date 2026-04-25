@@ -18,19 +18,29 @@
   --r:14px;--rl:20px;
 }
 *{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
-body{font-family:'DM Sans',sans-serif;background:var(--azul-oscuro);color:var(--blanco);overflow-x:hidden}
-.display{font-family:'Archivo Black',sans-serif;font-weight:800;letter-spacing:-.01em;line-height:.92}
-.label{display:inline-block;font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--amarillo);margin-bottom:.85rem;font-family:'DM Sans',sans-serif}
-.am{color:var(--amarillo)}
+body{
+  font-family:'Inter', sans-serif;
+  background:var(--azul-oscuro);
+  color:var(--blanco);
+  overflow-x:hidden;
+}
+.display{
+  font-family:'Oswald', sans-serif;
+  font-weight:700;
+  letter-spacing:-0.02em;
+  line-height:0.9;
+  text-transform:uppercase;
+  font-style:italic; /* esto le da ese toque Nike */
+}
 
 /* NAV */
 nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:.9rem 2.5rem;display:flex;align-items:center;justify-content:space-between;background:rgba(13,27,75,.93);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,215,0,.15)}
 .nav-logo{display:flex;align-items:center;gap:.75rem;text-decoration:none}
 .nav-escudo{width:38px;height:38px;background:linear-gradient(135deg,var(--azul-claro),var(--azul-oscuro));border-radius:50% 50% 45% 45%;display:flex;align-items:center;justify-content:center;border:2px solid var(--amarillo);font-family:'Archivo Black',sans-serif;font-weight:800;font-size:1rem;color:var(--amarillo)}
 .nav-txt{font-family:'Archivo Black',sans-serif;font-weight:800;font-size:1rem;color:var(--blanco);letter-spacing:-.01em;line-height:1.1}
-.nav-txt span{color:var(--amarillo);display:block;font-size:.62rem;letter-spacing:.14em;font-weight:500;font-family:'DM Sans',sans-serif;text-transform:uppercase}
+.nav-txt span{color:var(--amarillo);display:block;font-size:.62rem;letter-spacing:.14em;font-weight:500;font-family:'Inter',sans-serif;text-transform:uppercase}
 .nav-links{display:flex;gap:2rem;list-style:none}
-.nav-links a{color:var(--muted);text-decoration:none;font-size:.88rem;font-weight:500;letter-spacing:.02em;transition:color .2s;font-family:'DM Sans',sans-serif}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:.88rem;font-weight:500;letter-spacing:.02em;transition:color .2s;font-family:'Inter',sans-serif}
 .nav-links a:hover{color:var(--amarillo)}.nav-cta{background:var(--amarillo)!important;color:var(--azul-oscuro)!important;padding:.5rem 1.3rem;border-radius:100px;font-weight:800!important;transition:transform .2s,box-shadow .2s!important}
 .nav-cta:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,215,0,.4)!important}
 
@@ -51,16 +61,16 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:.9rem 2.5rem;display
 .h-stats{display:flex;gap:3rem;margin-top:4rem;animation:up .7s ease .4s both}
 .st-n{font-family:'Archivo Black',sans-serif;font-weight:800;font-size:2.8rem;line-height:1;color:var(--blanco)}
 .st-n .u{color:var(--amarillo)}
-.st-l{font-size:.72rem;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;font-weight:500;margin-top:.15rem;font-family:'DM Sans',sans-serif}
+.st-l{font-size:.72rem;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;font-weight:500;margin-top:.15rem;font-family:'Inter',sans-serif}
 .h-deco{position:absolute;right:2rem;bottom:2.5rem;font-family:'Archivo Black',sans-serif;font-size:9rem;color:rgba(255,255,255,.025);pointer-events:none;user-select:none;letter-spacing:.06em}
 @keyframes up{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
 
 /* BOTONES */
-.btn-am{display:inline-flex;align-items:center;gap:.6rem;background:var(--amarillo);color:var(--azul-oscuro);text-decoration:none;font-weight:700;font-size:.95rem;padding:.9rem 2rem;border-radius:100px;letter-spacing:.01em;font-family:'DM Sans',sans-serif;transition:transform .2s,box-shadow .2s}
+.btn-am{display:inline-flex;align-items:center;gap:.6rem;background:var(--amarillo);color:var(--azul-oscuro);text-decoration:none;font-weight:700;font-size:.95rem;padding:.9rem 2rem;border-radius:100px;letter-spacing:.01em;font-family:'Inter',sans-serif;transition:transform .2s,box-shadow .2s}
 .btn-am:hover{transform:translateY(-2px);box-shadow:0 12px 35px rgba(255,215,0,.35)}
-.btn-wa{display:inline-flex;align-items:center;gap:.6rem;background:var(--wa);color:white;text-decoration:none;font-weight:700;font-size:.95rem;padding:.9rem 2rem;border-radius:100px;letter-spacing:.01em;font-family:'DM Sans',sans-serif;transition:transform .2s,box-shadow .2s,background .2s}
+.btn-wa{display:inline-flex;align-items:center;gap:.6rem;background:var(--wa);color:white;text-decoration:none;font-weight:700;font-size:.95rem;padding:.9rem 2rem;border-radius:100px;letter-spacing:.01em;font-family:'Inter',sans-serif;transition:transform .2s,box-shadow .2s,background .2s}
 .btn-wa:hover{background:var(--wa-d);transform:translateY(-2px);box-shadow:0 12px 30px rgba(37,211,102,.3)}
-.btn-out{display:inline-flex;align-items:center;gap:.6rem;background:transparent;color:var(--blanco);text-decoration:none;font-weight:600;font-size:.95rem;padding:.9rem 2rem;border-radius:100px;border:1.5px solid rgba(255,255,255,.2);font-family:'DM Sans',sans-serif;transition:border-color .2s,background .2s,color .2s}
+.btn-out{display:inline-flex;align-items:center;gap:.6rem;background:transparent;color:var(--blanco);text-decoration:none;font-weight:600;font-size:.95rem;padding:.9rem 2rem;border-radius:100px;border:1.5px solid rgba(255,255,255,.2);font-family:'Inter',sans-serif;transition:border-color .2s,background .2s,color .2s}
 .btn-out:hover{border-color:var(--amarillo);background:rgba(255,215,0,.06);color:var(--amarillo)}
 
 /* FRANJA */
@@ -91,7 +101,7 @@ section{padding:7rem 2.5rem}
 .cat-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:2.5rem;flex-wrap:wrap;gap:1.25rem}
 .cat-title{font-size:clamp(2.5rem,6vw,5rem);line-height:1}
 .filtros{display:flex;gap:.5rem;flex-wrap:wrap}
-.fi{background:transparent;border:1.5px solid rgba(255,255,255,.12);color:var(--muted);padding:.4rem 1.1rem;border-radius:100px;font-size:.8rem;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;letter-spacing:.03em;transition:all .2s}
+.fi{background:transparent;border:1.5px solid rgba(255,255,255,.12);color:var(--muted);padding:.4rem 1.1rem;border-radius:100px;font-size:.8rem;font-weight:500;font-family:'Inter',sans-serif;cursor:pointer;letter-spacing:.03em;transition:all .2s}
 .fi:hover,.fi.on{background:var(--amarillo);border-color:var(--amarillo);color:var(--azul-oscuro)}
 .cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1.1rem}
 .cc{background:var(--gris);border:1px solid var(--borde);border-radius:var(--rl);overflow:hidden;transition:transform .3s,border-color .3s,box-shadow .3s;cursor:pointer;display:none}
@@ -115,8 +125,8 @@ section{padding:7rem 2.5rem}
 .cc-desc{font-size:.8rem;color:var(--muted);line-height:1.55}
 .cc-ft{display:flex;align-items:center;justify-content:space-between;margin-top:.85rem}
 .cc-precio{font-family:'Archivo Black',sans-serif;font-weight:800;font-size:1.2rem;color:var(--blanco);line-height:1}
-.cc-precio .d{font-family:'DM Sans',sans-serif;font-size:.65rem;color:var(--muted);font-weight:400;display:block;letter-spacing:.06em;text-transform:uppercase}
-.bwm{display:inline-flex;align-items:center;gap:.35rem;background:var(--wa);color:white;text-decoration:none;font-size:.78rem;font-weight:600;font-family:'DM Sans',sans-serif;padding:.42rem .85rem;border-radius:100px;transition:background .2s,transform .2s;white-space:nowrap}
+.cc-precio .d{font-family:'Inter',sans-serif;font-size:.65rem;color:var(--muted);font-weight:400;display:block;letter-spacing:.06em;text-transform:uppercase}
+.bwm{display:inline-flex;align-items:center;gap:.35rem;background:var(--wa);color:white;text-decoration:none;font-size:.78rem;font-weight:600;font-family:'Inter',sans-serif;padding:.42rem .85rem;border-radius:100px;transition:background .2s,transform .2s;white-space:nowrap}
 .bwm:hover{background:var(--wa-d);transform:scale(1.04)}
 .cat-cta{text-align:center;margin-top:3rem}
 .cat-cta p{color:var(--muted);font-size:.88rem;margin-bottom:1.25rem}
