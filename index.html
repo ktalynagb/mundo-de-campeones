@@ -52,7 +52,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:.9rem 2.5rem;display
 .h-badge{display:inline-flex;align-items:center;gap:.6rem;background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.35);color:var(--amarillo);padding:.4rem 1.1rem;border-radius:100px;font-size:.75rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:1.75rem;animation:up .7s ease both}
 .h-dot{width:7px;height:7px;border-radius:50%;background:var(--amarillo);animation:pulse 1.8s ease infinite}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.5)}}
-.h-title{font-size:clamp(4.5rem,13vw,11rem);color:var(--blanco);animation:up .7s ease .1s both;max-width:900px}
+.h-title{font-size: clamp(2.2rem, 10vw, 5rem);color:var(--blanco);animation:up .7s ease .1s both;max-width:900px}
 .h-title .am2{color:var(--azul-brillante)}
 .h-title .out{-webkit-text-stroke:2px rgba(255,255,255,.3);color:transparent}
 .h-sub{font-size:clamp(.95rem,2vw,1.15rem);color:var(--muted);max-width:540px;line-height:1.75;margin-top:1.5rem;animation:up .7s ease .2s both}
@@ -181,12 +181,15 @@ section{padding:7rem 2.5rem}
 
 /* PROCESO */
 #proceso{background:var(--gris-oscuro)}
-.pasos{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:3rem;position:relative}
-.pasos::after{content:'';position:absolute;top:27px;left:calc(12.5% + 27px);right:calc(12.5% + 27px);height:2px;background:linear-gradient(90deg,var(--amarillo),rgba(255,215,0,.15))}
-.paso{text-align:center;padding:0 1.2rem}
-.p-num{width:54px;height:54px;border-radius:50%;border:2px solid var(--amarillo);display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;color:var(--amarillo);background:var(--gris-oscuro);position:relative;z-index:1}
-.paso h4{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;letter-spacing:-.01em;margin-bottom:.45rem;color:var(--blanco)}
-.paso p{font-size:.85rem;color:var(--muted);line-height:1.6}
+.timeline{max-width:520px;margin:3rem auto 0;display:flex;flex-direction:column}
+.tl-item{display:grid;grid-template-columns:48px 32px 1fr;gap:0 1rem;align-items:start}
+.tl-num{width:48px;height:48px;border-radius:50%;border:2px solid var(--amarillo);color:var(--amarillo);font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.3rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--gris-oscuro)}
+.tl-line-wrap{display:flex;flex-direction:column;align-items:center;padding-top:12px}
+.tl-dot{width:10px;height:10px;border-radius:50%;background:var(--amarillo);flex-shrink:0}
+.tl-seg{width:2px;flex:1;min-height:60px;background:linear-gradient(to bottom,var(--amarillo),rgba(255,215,0,.1));margin-top:4px}
+.tl-right{padding-bottom:2.5rem}
+.tl-right h4{margin:0 0 .3rem;font-size:1.1rem;color:var(--blanco);padding-top:10px}
+.tl-right p{margin:0;font-size:.9rem;color:var(--muted);line-height:1.5}
 
 /* TESTIMONIOS */
 #testimonios{background:var(--azul-oscuro)}
@@ -270,11 +273,11 @@ footer{background:#070e26;border-top:1px solid rgba(255,215,0,.1);padding:3rem 2
 <!-- HERO -->
 <section id="hero">
   <div class="h-bg"></div><div class="h-lines"></div><div class="h-stripes"></div>
-  <div class="h-badge"><div class="h-dot"></div>El Cuartel General del Runner · Popayán</div>
+  
 
   <!-- LOGO GRANDE -->
   <img src="logo_mc_transparente.png" alt="Mundo de Campeones"
-     style="width: min(280px, 65vw); margin: 0 auto 1.5rem auto; display: block;
+     style="width: min(380px, 80vw); margin: 0 auto 1.5rem auto; display: block;
             mix-blend-mode: screen; animation: fadeInUp 0.8s ease both;">
 
   <h1 class="display h-title">CORRE.<br><span class="am">VIVE.</span><br><span class="out">CONQUISTA.</span></h1>
@@ -404,12 +407,50 @@ footer{background:#070e26;border-top:1px solid rgba(255,215,0,.1);padding:3rem 2
 <section id="proceso"><div class="inner">
   <span class="label">Así de fácil</span>
   <h2 class="display" style="font-size:clamp(2.5rem,6vw,5rem)">¿CÓMO <span class="am">COMPRAR?</span></h2>
-  <div class="pasos">
-    <div class="paso rev"><div class="p-num">1</div><h4>Explora el catálogo</h4><p>Revisa los productos aquí o pídenos el catálogo completo por WhatsApp.</p></div>
-    <div class="paso rev"><div class="p-num">2</div><h4>Escríbenos</h4><p>Te asesoramos de forma personalizada. Talla, color, modelo — todo sin compromiso.</p></div>
-    <div class="paso rev"><div class="p-num">3</div><h4>Confirmamos</h4><p>Acordamos precio y forma de pago. Rápido, claro y seguro.</p></div>
-    <div class="paso rev"><div class="p-num">4</div><h4>¡A correr!</h4><p>Envíos a todo Colombia o recoge en nuestro punto en Popayán.</p></div>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-left">
+        <div class="tl-num">1</div>
+      </div>
+      <div class="tl-line-wrap"><div class="tl-dot"></div><div class="tl-seg"></div></div>
+      <div class="tl-right">
+        <h4>Explora el catálogo</h4>
+        <p>Revisa los productos aquí o pídenos el catálogo completo por WhatsApp.</p>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-left">
+        <div class="tl-num">2</div>
+      </div>
+      <div class="tl-line-wrap"><div class="tl-dot"></div><div class="tl-seg"></div></div>
+      <div class="tl-right">
+        <h4>Escríbenos</h4>
+        <p>Te asesoramos de forma personalizada. Talla, color, modelo — todo sin compromiso.</p>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-left">
+        <div class="tl-num">3</div>
+      </div>
+      <div class="tl-line-wrap"><div class="tl-dot"></div><div class="tl-seg"></div></div>
+      <div class="tl-right">
+        <h4>Confirmamos</h4>
+        <p>Acordamos precio y forma de pago. Rápido, claro y seguro.</p>
+      </div>
+    </div>
+    <div class="tl-item last">
+      <div class="tl-left">
+        <div class="tl-num">4</div>
+      </div>
+      <div class="tl-line-wrap"><div class="tl-dot"></div></div>
+      <div class="tl-right">
+        <h4>¡A correr!</h4>
+        <p>Envíos a todo Colombia o recoge en nuestro punto en Popayán.</p>
+      </div>
+    </div>
   </div>
+
 </div></section>
 
 <!-- TESTIMONIOS -->
