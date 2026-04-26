@@ -64,6 +64,13 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:.9rem 2.5rem;display
 .st-l{font-size:.72rem;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;font-weight:500;margin-top:.15rem;font-family:'Inter',sans-serif}
 .h-deco{position:absolute;right:2rem;bottom:2.5rem;font-family:'Archivo Black',sans-serif;font-size:9rem;color:rgba(255,255,255,.025);pointer-events:none;user-select:none;letter-spacing:.06em}
 @keyframes up{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+.h-split{display:flex;align-items:center;justify-content:center;gap:3rem;margin-bottom:2rem}
+.h-split .h-title{margin:0;text-align:left}
+@media(max-width:600px){
+  .h-split{flex-direction:column;align-items:center;gap:1.5rem}
+  .h-split .h-title{text-align:center}
+  .h-split img{width:min(220px,70vw) !important}
+}
 
 /* BOTONES */
 .btn-am{display:inline-flex;align-items:center;gap:.6rem;background:var(--amarillo);color:var(--azul-oscuro);text-decoration:none;font-weight:700;font-size:.95rem;padding:.9rem 2rem;border-radius:100px;letter-spacing:.01em;font-family:'Inter',sans-serif;transition:transform .2s,box-shadow .2s}
@@ -274,12 +281,12 @@ footer{background:#070e26;border-top:1px solid rgba(255,215,0,.1);padding:3rem 2
 <section id="hero">
   <div class="h-bg"></div><div class="h-lines"></div><div class="h-stripes"></div>
   
-
-  <!-- LOGO GRANDE -->
-  <img src="logo_mc_transparente.png" alt="Mundo de Campeones"
-     style="width: min(380px, 80vw); margin: 0 auto 1.5rem auto; display: block;
-            mix-blend-mode: screen; animation: fadeInUp 0.8s ease both;">
-
+  <!-- HERO SPLIT -->
+  <div class="h-split">
+    <h1 class="display h-title">CORRE.<br><span class="am">VIVE.</span><br><span class="out">CONQUISTA.</span></h1>
+    <img src="logo_mc_transparente.png" alt="Mundo de Campeones"
+       style="width: min(320px, 45vw); filter: drop-shadow(0 6px 32px rgba(0,0,0,0.6)); animation: fadeInUp 0.8s ease both;">
+  </div>
   <h1 class="display h-title">CORRE.<br><span class="am">VIVE.</span><br><span class="out">CONQUISTA.</span></h1>
   <p class="h-sub">Somos una <strong>familia runner de Popayán</strong> que selecciona cada producto porque lo ha probado en pista. Tenis, ropa deportiva y lifestyle para quien vive corriendo — y para quien quiere verse campeón <strong>todos los días</strong>.</p>
   <div class="h-actions">
