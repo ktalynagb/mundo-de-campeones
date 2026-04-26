@@ -65,7 +65,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:.9rem 2.5rem;display
 .h-deco{position:absolute;right:2rem;bottom:2.5rem;font-family:'Archivo Black',sans-serif;font-size:9rem;color:rgba(255,255,255,.025);pointer-events:none;user-select:none;letter-spacing:.06em}
 @keyframes up{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
 .h-split{display:flex;align-items:center;justify-content:center;gap:3rem;margin-bottom:2rem}
-.h-split .h-title{margin:0;text-align:left}
+.h-split .h-title{margin:0;text-align:left;flex:1}
+.h-split img{width:min(420px, 40vw) !important}
 @media(max-width:600px){
   .h-split{flex-direction:column;align-items:center;gap:1.5rem}
   .h-split .h-title{text-align:center}
