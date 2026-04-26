@@ -239,7 +239,9 @@ footer{background:#070e26;border-top:1px solid rgba(255,215,0,.1);padding:3rem 2
 .waf svg{width:32px;height:32px;fill:white}
 @keyframes bote{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
 .igf{position:fixed;right:2rem;bottom:7.5rem;width:62px;height:62px;border-radius:50%;background:radial-gradient(circle at 30% 110%,#f09433,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,0,0,.35);z-index:999;transition:transform .2s}
-.igf:hover{transform:scale(1.1)}
+
+.igf{animation:bote 3s ease 2.5s infinite}
+.igf:hover{transform:scale(1.1);animation:none}
 .igf svg{width:26px;height:26px}
 
 /* REVEAL */
