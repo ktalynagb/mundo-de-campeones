@@ -541,8 +541,17 @@ function renderCatalogo() {
     const tagKey = (p.tag||'').toLowerCase().trim();
     const tagClass = TAG_CLASS[tagKey] || '';
     const tagHTML = tagKey && tagClass ? `<div class="tags"><span class="tag ${tagClass}">${p.tag}</span></div>` : '';
-    const fotoHTML = p.foto && p.foto.startsWith('http')
-      ? `<img src="${p.foto}" alt="${p.nombre}" loading="lazy" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0">`
+    let urlFoto = p.foto || '';
+    if (urlFoto.includes('imgur.com') && !urlFoto.includes('i.imgur.com')) {
+      const id = urlFoto.split('/').pop().split('.')[0];
+      urlFoto = `https://i.imgur.com/${id}.jpeg`;
+    }
+    if (urlFoto.includes('drive.google.com/file/d/')) {
+      const id = urlFoto.split('/d/')[1].split('/')[0];
+      urlFoto = `https://drive.google.com/uc?export=view&id=${id}`;
+    }
+    const fotoHTML = urlFoto && urlFoto.startsWith('http')
+      ? `<img src="${urlFoto}" alt="${p.nombre}" loading="lazy" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0">`
       : `<span class="cc-icon">${icono}</span><span class="cc-sub">Foto próximamente</span>`;
     const msg = encodeURIComponent(`Hola MC 🏆 Me interesa: *${p.nombre}*. ¿Tienen disponibilidad?`);
     return `
