@@ -616,9 +616,14 @@ async function cargarVideo() {
 
     // YouTube
     if (link.includes('youtube.com') || link.includes('youtu.be')) {
-      const id = link.includes('youtu.be')
-        ? link.split('youtu.be/')[1].split('?')[0]
-        : new URLSearchParams(link.split('?')[1]).get('v');
+      let id;
+      if (link.includes('youtu.be')) {
+        id = link.split('youtu.be/')[1].split('?')[0];
+      } else if (link.includes('/shorts/')) {
+        id = link.split('/shorts/')[1].split('?')[0];
+      } else {
+        id = new URLSearchParams(link.split('?')[1]).get('v');
+      }
       wrapper.innerHTML = `<div style="width:100%;max-width:400px;aspect-ratio:9/16;border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)">
         <iframe width="100%" height="100%" src="https://www.youtube.com/embed/${id}?rel=0&modestbranding=1" frameborder="0" allowfullscreen style="border-radius:20px"></iframe>
       </div>`;
