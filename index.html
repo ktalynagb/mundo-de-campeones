@@ -327,6 +327,18 @@ footer{background:#070e26;border-top:1px solid rgba(255,215,0,.1);padding:3rem 2
   <div class="franja-item"></span>Comunidad MC</div><div class="fsep">◆</div>
 </div></div>
 
+<!-- VIDEO SECTION -->
+<section id="video-mc" style="padding:4rem 2.5rem;background:var(--gris-oscuro)">
+  <div class="inner" style="max-width:1140px;margin:0 auto">
+    <span class="label">Esto es MC</span>
+    <h2 class="display" style="font-size:clamp(2rem,5vw,4rem);margin-bottom:2.5rem">VÍVELO <span class="am">EN PRIMERA PERSONA</span></h2>
+    <div id="video-wrapper" style="display:flex;justify-content:center;align-items:center;min-height:200px">
+      <div style="color:rgba(255,255,255,.3);font-size:.9rem">Cargando video...</div>
+    </div>
+  </div>
+</section>
+
+
 <!-- PROPUESTA -->
 <section id="propuesta"><div class="inner">
   <span class="label">¿Por qué MC?</span>
@@ -590,6 +602,52 @@ const obs = new IntersectionObserver(entries => {
 }, {threshold:.1});
 document.querySelectorAll('.rev').forEach(el => obs.observe(el));
 
+// ── VIDEO DESDE SHEET ──
+async function cargarVideo() {
+  try {
+    const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTkyKHX1Ka1wMOwNj7sbwQaEMkIEV7A3j88Y_b4Rt0DeljeOXkuLPpLJlLIF4plvHlivbA3W8q_TOy9/pub?gid=565588808&single=true&output=csv';
+    const res = await fetch(url);
+    const texto = await res.text();
+    const filas = texto.trim().split('\n').map(f => f.replace(/"/g,'').split(','));
+    const config = {};
+    filas.forEach(f => { if(f[0]) config[f[0].trim().toLowerCase()] = (f[1]||'').trim(); });
+    const link = config['video'] || '';
+    if (!link) return;
+    const wrapper = document.getElementById('video-wrapper');
+
+    // YouTube
+    if (link.includes('youtube.com') || link.includes('youtu.be')) {
+      const id = link.includes('youtu.be')
+        ? link.split('youtu.be/')[1].split('?')[0]
+        : new URLSearchParams(link.split('?')[1]).get('v');
+      wrapper.innerHTML = `<div style="width:100%;max-width:400px;aspect-ratio:9/16;border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)">
+        <iframe width="100%" height="100%" src="https://www.youtube.com/embed/${id}?rel=0&modestbranding=1" frameborder="0" allowfullscreen style="border-radius:20px"></iframe>
+      </div>`;
+
+    // TikTok
+    } else if (link.includes('tiktok.com')) {
+      const videoId = link.split('/video/')[1]?.split('?')[0];
+      wrapper.innerHTML = `<div style="max-width:400px;width:100%">
+        <blockquote class="tiktok-embed" cite="${link}" data-video-id="${videoId}" style="max-width:400px;min-width:300px;border-radius:20px;overflow:hidden">
+          <section></section>
+        </blockquote>
+        <script async src="https://www.tiktok.com/embed.js"><\/script>
+      </div>`;
+
+    // Instagram
+    } else if (link.includes('instagram.com')) {
+      const postUrl = link.split('?')[0].replace(/\/$/, '');
+      wrapper.innerHTML = `<div style="max-width:400px;width:100%;border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)">
+        <blockquote class="instagram-media" data-instgrm-permalink="${postUrl}/" data-instgrm-version="14"
+          style="width:100%;border-radius:20px;background:#1e2a4a;border:none;margin:0">
+        </blockquote>
+        <script async src="//www.instagram.com/embed.js"><\/script>
+      </div>`;
+    }
+  } catch(e) { console.log('Video no disponible'); }
+}
+
+cargarVideo();
 cargarCatalogo();
 </script>
 </body>
