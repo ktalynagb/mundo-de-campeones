@@ -383,20 +383,12 @@ function intentarLogin() {
   }
 }
 
-// Verificar sesión al cargar
-if (sessionStorage.getItem('mc_auth') === '1') {
-  document.getElementById('login-screen').classList.add('hidden');
-  document.getElementById('app-main').style.display = 'grid';
-  init();
-}
-
-
-  // Fecha hoy
+// ══ INIT ══
+function init() {
   const hoy = new Date();
   document.getElementById('fecha-hoy').textContent = hoy.toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long'});
-
-  // Avatares equipo
   const cont = document.getElementById('equipo-avatars');
+  cont.innerHTML = '';
   EQUIPO.forEach(m => {
     const el = document.createElement('div');
     el.className = 'avatar';
@@ -407,11 +399,15 @@ if (sessionStorage.getItem('mc_auth') === '1') {
     el.title = m.nombre;
     cont.appendChild(el);
   });
-
-  // Datos de ejemplo si no hay nada
   if (!tareas.length) cargarEjemplos();
-
   renderTodo();
+}
+
+// Verificar sesión al cargar
+if (sessionStorage.getItem('mc_auth') === '1') {
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('app-main').style.display = 'grid';
+  init();
 }
 
 function cargarEjemplos() {
