@@ -454,7 +454,7 @@ input,select,textarea{font-family:'DM Sans',sans-serif;outline:none}
           <option value="Todos">👥 Todos</option>
           <option value="Mamá">👩 Mamá</option>
           <option value="Papá">👨 Papá</option>
-          <option value="Katalina">👧 Katalina</option>
+          <option value="Ktalyna">👧 Ktalyna</option>
         </select>
       </div>
     </div>
@@ -706,12 +706,12 @@ function datosEjemploTareas() {
   const hoy = new Date();
   const d = n => { const x = new Date(hoy); x.setDate(hoy.getDate()+n); return x.toISOString().split('T')[0]; };
   return [
-    {id:uid(), titulo:'Publicar contenido Instagram — nueva colección', desc:'Reel vertical con los nuevos tenis', prioridad:'alta', encargado:'Katalina', fecha:d(1), estado:'pendiente', categoria:'Redes'},
-    {id:uid(), titulo:'Actualizar catálogo Google Sheets', desc:'Agregar 3 productos nuevos con fotos', prioridad:'media', encargado:'Katalina', fecha:d(0), estado:'en_progreso', categoria:'Web'},
+    {id:uid(), titulo:'Publicar contenido Instagram — nueva colección', desc:'Reel vertical con los nuevos tenis', prioridad:'alta', encargado:'Ktalyna', fecha:d(1), estado:'pendiente', categoria:'Redes'},
+    {id:uid(), titulo:'Actualizar catálogo Google Sheets', desc:'Agregar 3 productos nuevos con fotos', prioridad:'media', encargado:'Ktalyna', fecha:d(0), estado:'en_progreso', categoria:'Web'},
     {id:uid(), titulo:'Llamar proveedor tenis trail', desc:'Confirmar pedido y fecha de entrega', prioridad:'alta', encargado:'Papá', fecha:d(2), estado:'pendiente', categoria:'Stock'},
     {id:uid(), titulo:'Preparar ruta sábado de running', desc:'Ruta Mundo de Campeones 8K por el río', prioridad:'media', encargado:'Mamá', fecha:d(5), estado:'pendiente', categoria:'Comunidad'},
     {id:uid(), titulo:'Responder mensajes WhatsApp pendientes', desc:'15 consultas sin responder', prioridad:'alta', encargado:'Todos', fecha:d(-1), estado:'completada', categoria:'Ventas'},
-    {id:uid(), titulo:'Fotografiar nuevos productos', desc:'Camisetas técnicas y gorras nuevas', prioridad:'baja', encargado:'Katalina', fecha:d(7), estado:'pendiente', categoria:'Contenido'},
+    {id:uid(), titulo:'Fotografiar nuevos productos', desc:'Camisetas técnicas y gorras nuevas', prioridad:'baja', encargado:'Ktalyna', fecha:d(7), estado:'pendiente', categoria:'Contenido'},
   ];
 }
 
@@ -720,7 +720,7 @@ function datosEjemploEventos() {
   const d = n => { const x = new Date(hoy); x.setDate(hoy.getDate()+n); return x.toISOString().split('T')[0]; };
   return [
     {id:uid(), titulo:'Apertura tienda', fecha:d(0), hora:'08:00', encargado:'Todos'},
-    {id:uid(), titulo:'Inventario bodega', fecha:d(1), hora:'10:00', encargado:'Katalina'},
+    {id:uid(), titulo:'Inventario bodega', fecha:d(1), hora:'10:00', encargado:'Ktalyna'},
     {id:uid(), titulo:'Reunión proveedores', fecha:d(2), hora:'15:00', encargado:'Papá'},
     {id:uid(), titulo:'Sábado Runner MC', fecha:d(5), hora:'06:00', encargado:'Todos'},
   ];
