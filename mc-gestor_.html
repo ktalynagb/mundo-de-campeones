@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MC Gestor — Mundo de Campeones</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --azul:#0d1b4b; --azul-m:#1a3a8f; --azul-c:#2e6cc7;
+  --am:#FFD700; --am-osc:#b8960a;
+  --blanco:#f8f9ff; --gris-osc:#0a1020; --gris:#1e2a4a; --gris-claro:#2a3a5a;
+  --borde:rgba(255,255,255,0.08); --muted:rgba(255,255,255,0.45);
+  --wa:#25D366;
+  --rojo:#ef4444; --verde:#22c55e; --naranja:#f97316; --violeta:#8b5cf6;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--gris-osc);color:var(--blanco);overflow-x:hidden}
+
+/* ── LOGIN ── */
+.login-screen{position:fixed;inset:0;background:var(--gris-osc);z-index:9999;display:flex;align-items:center;justify-content:center}
+.login-screen.hidden{display:none}
+.login-box{background:var(--gris);border:1px solid rgba(255,215,0,.2);border-radius:20px;padding:2.5rem;width:100%;max-width:380px;text-align:center}
+.login-logo{font-family:'Oswald',sans-serif;font-weight:700;font-style:italic;font-size:2.5rem;color:var(--blanco);letter-spacing:.04em;margin-bottom:.25rem}
+.login-logo span{color:var(--am)}
+.login-sub{font-size:.8rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:2rem}
+.login-field{text-align:left;margin-bottom:1rem}
+.login-label{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;display:block;margin-bottom:.4rem;font-weight:600}
+.login-input{width:100%;background:var(--gris-osc);border:1.5px solid var(--borde);color:var(--blanco);padding:.7rem 1rem;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.92rem;outline:none;transition:border-color .15s}
+.login-input:focus{border-color:var(--am)}
+.login-btn{width:100%;background:var(--am);color:var(--azul);border:none;padding:.85rem;border-radius:10px;font-family:'Oswald',sans-serif;font-weight:700;font-size:1rem;letter-spacing:.06em;cursor:pointer;margin-top:.5rem;transition:transform .15s,box-shadow .15s}
+.login-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(255,215,0,.3)}
+.login-error{color:#ef4444;font-size:.8rem;margin-top:.75rem;display:none}
+
+/* ── LAYOUT ── */
+.app{display:grid;grid-template-columns:240px 1fr;grid-template-rows:60px 1fr;height:100vh;overflow:hidden}
+
+/* ── TOPBAR ── */
+.topbar{grid-column:1/-1;background:var(--azul);border-bottom:1px solid rgba(255,215,0,.2);display:flex;align-items:center;padding:0 1.5rem;gap:1rem;z-index:100}
+.topbar-logo{font-family:'Oswald',sans-serif;font-weight:700;font-style:italic;font-size:1.3rem;color:var(--blanco);letter-spacing:.04em}
+.topbar-logo span{color:var(--am)}
+.topbar-sep{width:1px;height:28px;background:rgba(255,255,255,.15)}
+.topbar-title{font-size:.82rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;font-weight:500}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:.75rem}
+.topbar-date{font-size:.8rem;color:var(--muted)}
+.btn-new{background:var(--am);color:var(--azul);border:none;padding:.45rem 1rem;border-radius:8px;font-family:'Oswald',sans-serif;font-weight:600;font-size:.85rem;cursor:pointer;letter-spacing:.04em;transition:transform .15s,box-shadow .15s}
+.btn-new:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,215,0,.3)}
+
+/* ── SIDEBAR ── */
+.sidebar{background:var(--azul);border-right:1px solid var(--borde);padding:1rem 0;overflow-y:auto}
+.nav-section{padding:.5rem 1rem .25rem;font-size:.65rem;color:rgba(255,215,0,.5);letter-spacing:.14em;text-transform:uppercase;font-weight:600}
+.nav-item{display:flex;align-items:center;gap:.7rem;padding:.6rem 1.25rem;cursor:pointer;transition:background .15s,color .15s;font-size:.88rem;color:var(--muted);border-left:3px solid transparent;margin:.1rem 0}
+.nav-item:hover{background:rgba(255,255,255,.05);color:var(--blanco)}
+.nav-item.active{background:rgba(255,215,0,.1);color:var(--am);border-left-color:var(--am)}
+.nav-icon{font-size:1rem;width:20px;text-align:center}
+.sidebar-footer{padding:1rem;margin-top:auto}
+.team-avatars{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.5rem}
+.avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;font-family:'Oswald',sans-serif;cursor:pointer;border:2px solid transparent;transition:border-color .15s}
+.avatar:hover{border-color:var(--am)}
+
+/* ── MAIN ── */
+.main{overflow-y:auto;padding:1.5rem;background:var(--gris-osc)}
+
+/* ── VISTAS ── */
+.vista{display:none}
+.vista.active{display:block}
+
+/* ── DASHBOARD ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem}
+.kpi{background:var(--gris);border:1px solid var(--borde);border-radius:14px;padding:1.25rem;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.kpi.am::before{background:var(--am)}
+.kpi.verde::before{background:var(--verde)}
+.kpi.rojo::before{background:var(--rojo)}
+.kpi.azul::before{background:var(--azul-c)}
+.kpi-label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.4rem}
+.kpi-val{font-family:'Oswald',sans-serif;font-size:2rem;font-weight:700;line-height:1}
+.kpi-sub{font-size:.75rem;color:var(--muted);margin-top:.3rem}
+
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.card{background:var(--gris);border:1px solid var(--borde);border-radius:14px;padding:1.25rem}
+.card-title{font-family:'Oswald',sans-serif;font-size:1rem;font-weight:600;letter-spacing:.04em;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between}
+.card-title span{font-family:'DM Sans',sans-serif;font-size:.72rem;color:var(--muted);font-weight:400}
+
+/* ── TAREAS ── */
+.filtros-bar{display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap}
+.filtro{background:transparent;border:1.5px solid var(--borde);color:var(--muted);padding:.35rem .85rem;border-radius:100px;font-size:.78rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.filtro:hover,.filtro.on{background:var(--am);border-color:var(--am);color:var(--azul);font-weight:600}
+
+.tareas-lista{display:flex;flex-direction:column;gap:.6rem}
+.tarea{background:var(--gris);border:1px solid var(--borde);border-radius:12px;padding:1rem 1.25rem;display:grid;grid-template-columns:auto 1fr auto auto auto;align-items:center;gap:1rem;transition:border-color .2s,transform .2s}
+.tarea:hover{border-color:rgba(255,215,0,.25);transform:translateY(-1px)}
+.tarea-check{width:20px;height:20px;border-radius:6px;border:2px solid var(--borde);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.tarea-check.done{background:var(--verde);border-color:var(--verde)}
+.tarea-check.done::after{content:'✓';color:white;font-size:.75rem;font-weight:700}
+.tarea-info{}
+.tarea-nombre{font-size:.9rem;font-weight:600;margin-bottom:.2rem}
+.tarea-nombre.tachado{text-decoration:line-through;color:var(--muted)}
+.tarea-meta{font-size:.75rem;color:var(--muted);display:flex;gap:.75rem}
+.tarea-prioridad{font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:.2rem .6rem;border-radius:100px}
+.p-alta{background:rgba(239,68,68,.15);color:var(--rojo)}
+.p-media{background:rgba(249,115,22,.15);color:var(--naranja)}
+.p-baja{background:rgba(34,197,94,.15);color:var(--verde)}
+.tarea-asignado{font-size:.75rem}
+.tarea-fecha{font-size:.75rem;color:var(--muted)}
+.tarea-acciones{display:flex;gap:.4rem}
+.btn-icon{background:transparent;border:none;color:var(--muted);cursor:pointer;padding:.3rem;border-radius:6px;font-size:.9rem;transition:color .15s,background .15s}
+.btn-icon:hover{color:var(--blanco);background:rgba(255,255,255,.08)}
+
+/* ── HORARIO ── */
+.semana-nav{display:flex;align-items:center;gap:1rem;margin-bottom:1.25rem}
+.semana-nav button{background:var(--gris);border:1px solid var(--borde);color:var(--blanco);padding:.4rem .85rem;border-radius:8px;cursor:pointer;font-size:.85rem;transition:background .15s}
+.semana-nav button:hover{background:var(--gris-claro)}
+.semana-label{font-family:'Oswald',sans-serif;font-size:1.1rem;font-weight:600;letter-spacing:.04em}
+
+.horario-grid{display:grid;grid-template-columns:60px repeat(7,1fr);gap:0;border-radius:14px;overflow:hidden;border:1px solid var(--borde)}
+.hora-col,.dia-col{display:contents}
+.hora-header,.dia-header{background:var(--gris);padding:.65rem .5rem;text-align:center;font-size:.78rem;font-weight:600;border-bottom:1px solid var(--borde)}
+.hora-header{color:var(--muted);font-size:.7rem}
+.dia-header{font-family:'Oswald',sans-serif;letter-spacing:.04em}
+.dia-header.hoy{color:var(--am)}
+.hora-slot{background:var(--gris-osc);border-right:1px solid var(--borde);border-bottom:1px solid rgba(255,255,255,.04);padding:.3rem .4rem;font-size:.68rem;color:var(--muted);text-align:right;min-height:44px}
+.evento-slot{background:var(--gris-osc);border-right:1px solid var(--borde);border-bottom:1px solid rgba(255,255,255,.04);min-height:44px;padding:.2rem;position:relative;cursor:pointer}
+.evento-slot:hover{background:rgba(255,255,255,.03)}
+.evento{border-radius:6px;padding:.25rem .5rem;font-size:.7rem;font-weight:600;cursor:pointer;margin-bottom:2px;transition:opacity .15s}
+.evento:hover{opacity:.85}
+.ev-reunion{background:rgba(46,108,199,.4);border-left:3px solid var(--azul-c);color:#93c5fd}
+.ev-carrera{background:rgba(255,215,0,.15);border-left:3px solid var(--am);color:var(--am)}
+.ev-trabajo{background:rgba(34,197,94,.15);border-left:3px solid var(--verde);color:#86efac}
+.ev-entrega{background:rgba(239,68,68,.15);border-left:3px solid var(--rojo);color:#fca5a5}
+
+/* ── REUNIONES ── */
+.reuniones-lista{display:flex;flex-direction:column;gap:.75rem}
+.reunion{background:var(--gris);border:1px solid var(--borde);border-radius:12px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;transition:border-color .2s}
+.reunion:hover{border-color:rgba(255,215,0,.25)}
+.reunion-hora{font-family:'Oswald',sans-serif;font-size:1.4rem;font-weight:700;color:var(--am);min-width:56px;text-align:center;line-height:1}
+.reunion-hora small{display:block;font-size:.65rem;color:var(--muted);font-family:'DM Sans',sans-serif;font-weight:400}
+.reunion-sep{width:1px;height:40px;background:var(--borde)}
+.reunion-info{flex:1}
+.reunion-titulo{font-weight:600;font-size:.92rem;margin-bottom:.2rem}
+.reunion-meta{font-size:.75rem;color:var(--muted);display:flex;gap:.75rem}
+.reunion-tipo{font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:.2rem .6rem;border-radius:100px}
+.rt-presencial{background:rgba(34,197,94,.15);color:var(--verde)}
+.rt-virtual{background:rgba(46,108,199,.2);color:#93c5fd}
+.rt-carrera{background:rgba(255,215,0,.15);color:var(--am)}
+.reunion-asistentes{display:flex;gap:.3rem}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--gris);border:1px solid rgba(255,215,0,.2);border-radius:16px;padding:1.75rem;width:100%;max-width:480px;transform:translateY(20px);transition:transform .2s}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-title{font-family:'Oswald',sans-serif;font-size:1.3rem;font-weight:700;letter-spacing:.04em;margin-bottom:1.25rem;color:var(--am)}
+.form-group{margin-bottom:1rem}
+.form-label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem;display:block;font-weight:600}
+.form-input,.form-select,.form-textarea{width:100%;background:var(--gris-osc);border:1.5px solid var(--borde);color:var(--blanco);padding:.65rem .85rem;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.88rem;transition:border-color .15s;outline:none}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--am)}
+.form-select option{background:var(--gris-osc)}
+.form-textarea{resize:vertical;min-height:80px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.modal-actions{display:flex;gap:.75rem;margin-top:1.5rem;justify-content:flex-end}
+.btn-cancel{background:transparent;border:1.5px solid var(--borde);color:var(--muted);padding:.6rem 1.25rem;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.88rem;transition:all .15s}
+.btn-cancel:hover{border-color:var(--muted);color:var(--blanco)}
+.btn-save{background:var(--am);color:var(--azul);border:none;padding:.6rem 1.5rem;border-radius:8px;font-family:'Oswald',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer;letter-spacing:.04em;transition:transform .15s,box-shadow .15s}
+.btn-save:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,215,0,.3)}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:3rem;color:var(--muted)}
+.empty-icon{font-size:2.5rem;margin-bottom:.75rem}
+.empty-txt{font-size:.9rem}
+
+/* ── SCROLL ── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--borde);border-radius:10px}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .app{grid-template-columns:1fr;grid-template-rows:60px auto 1fr}
+  .sidebar{display:none}
+  .kpi-grid{grid-template-columns:1fr 1fr}
+  .dash-grid{grid-template-columns:1fr}
+  .horario-grid{grid-template-columns:50px repeat(7,1fr)}
+  .tarea{grid-template-columns:auto 1fr auto}
+}
+</style>
+</head>
+<body>
+<!-- LOGIN -->
+<div class="login-screen" id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">MC<span>.</span></div>
+    <div class="login-sub">Gestor Operativo — Acceso Privado</div>
+    <div class="login-field">
+      <label class="login-label">Usuario</label>
+      <input class="login-input" type="text" id="login-user" placeholder="usuario" autocomplete="username">
+    </div>
+    <div class="login-field">
+      <label class="login-label">Contraseña</label>
+      <input class="login-input" type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')intentarLogin()">
+    </div>
+    <button class="login-btn" onclick="intentarLogin()">ENTRAR 🏆</button>
+    <div class="login-error" id="login-error">Usuario o contraseña incorrectos</div>
+  </div>
+</div>
+
+<div class="app" id="app-main" style="display:none">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-logo">MC<span>.</span></div>
+    <div class="topbar-sep"></div>
+    <div class="topbar-title">Gestor Operativo</div>
+    <div class="topbar-right">
+      <div class="topbar-date" id="fecha-hoy"></div>
+      <button class="btn-new" onclick="abrirModal()">+ Nuevo</button>
+    </div>
+  </header>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="nav-section">Principal</div>
+    <div class="nav-item active" onclick="cambiarVista('dashboard',this)">
+      <span class="nav-icon">🏠</span> Dashboard
+    </div>
+    <div class="nav-item" onclick="cambiarVista('tareas',this)">
+      <span class="nav-icon">✅</span> Tareas
+    </div>
+    <div class="nav-item" onclick="cambiarVista('horario',this)">
+      <span class="nav-icon">📅</span> Horario
+    </div>
+    <div class="nav-item" onclick="cambiarVista('reuniones',this)">
+      <span class="nav-icon">🤝</span> Reuniones
+    </div>
+
+    <div class="nav-section" style="margin-top:.75rem">Equipo MC</div>
+    <div style="padding:.5rem 1.25rem">
+      <div class="team-avatars" id="equipo-avatars"></div>
+    </div>
+
+    <div class="nav-section" style="margin-top:.75rem">Filtrar por</div>
+    <div class="nav-item" onclick="filtrarEncargado('todos',this)">
+      <span class="nav-icon">👥</span> Todos
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- DASHBOARD -->
+    <div class="vista active" id="v-dashboard">
+      <div class="kpi-grid">
+        <div class="kpi am">
+          <div class="kpi-label">Tareas pendientes</div>
+          <div class="kpi-val" id="kpi-pendientes">0</div>
+          <div class="kpi-sub">esta semana</div>
+        </div>
+        <div class="kpi verde">
+          <div class="kpi-label">Completadas</div>
+          <div class="kpi-val" id="kpi-completadas">0</div>
+          <div class="kpi-sub">total</div>
+        </div>
+        <div class="kpi rojo">
+          <div class="kpi-label">Vencidas</div>
+          <div class="kpi-val" id="kpi-vencidas">0</div>
+          <div class="kpi-sub">requieren atención</div>
+        </div>
+        <div class="kpi azul">
+          <div class="kpi-label">Reuniones hoy</div>
+          <div class="kpi-val" id="kpi-reuniones">0</div>
+          <div class="kpi-sub">programadas</div>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="card">
+          <div class="card-title">Próximas tareas <span>ver todas</span></div>
+          <div id="dash-tareas-proximas"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Reuniones próximas <span>ver todas</span></div>
+          <div id="dash-reuniones-proximas"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAREAS -->
+    <div class="vista" id="v-tareas">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+        <h2 style="font-family:'Oswald',sans-serif;font-size:1.5rem;font-weight:700;letter-spacing:.04em">TAREAS <span style="color:var(--am)">MC</span></h2>
+        <button class="btn-new" onclick="abrirModal('tarea')">+ Nueva tarea</button>
+      </div>
+      <div class="filtros-bar">
+        <button class="filtro on" onclick="filtrarTareas('todas',this)">Todas</button>
+        <button class="filtro" onclick="filtrarTareas('pendiente',this)">Pendientes</button>
+        <button class="filtro" onclick="filtrarTareas('en-progreso',this)">En progreso</button>
+        <button class="filtro" onclick="filtrarTareas('completada',this)">Completadas</button>
+        <button class="filtro" onclick="filtrarTareas('alta',this)">🔴 Alta prioridad</button>
+      </div>
+      <div class="tareas-lista" id="lista-tareas"></div>
+    </div>
+
+    <!-- HORARIO -->
+    <div class="vista" id="v-horario">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+        <h2 style="font-family:'Oswald',sans-serif;font-size:1.5rem;font-weight:700;letter-spacing:.04em">HORARIO <span style="color:var(--am)">SEMANAL</span></h2>
+        <button class="btn-new" onclick="abrirModal('evento')">+ Nuevo evento</button>
+      </div>
+      <div class="semana-nav">
+        <button onclick="cambiarSemana(-1)">← Anterior</button>
+        <div class="semana-label" id="semana-label"></div>
+        <button onclick="cambiarSemana(1)">Siguiente →</button>
+        <button onclick="irHoy()" style="margin-left:auto">Hoy</button>
+      </div>
+      <div class="horario-grid" id="horario-grid"></div>
+    </div>
+
+    <!-- REUNIONES -->
+    <div class="vista" id="v-reuniones">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+        <h2 style="font-family:'Oswald',sans-serif;font-size:1.5rem;font-weight:700;letter-spacing:.04em">REUNIONES <span style="color:var(--am)">& EVENTOS</span></h2>
+        <button class="btn-new" onclick="abrirModal('reunion')">+ Nueva reunión</button>
+      </div>
+      <div class="filtros-bar">
+        <button class="filtro on" onclick="filtrarReuniones('todas',this)">Todas</button>
+        <button class="filtro" onclick="filtrarReuniones('presencial',this)">Presencial</button>
+        <button class="filtro" onclick="filtrarReuniones('virtual',this)">Virtual</button>
+        <button class="filtro" onclick="filtrarReuniones('carrera',this)">🏃 Carrera</button>
+      </div>
+      <div class="reuniones-lista" id="lista-reuniones"></div>
+    </div>
+
+  </main>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="cerrarModalOverlay(event)">
+  <div class="modal">
+    <div class="modal-title" id="modal-titulo">Nueva Tarea</div>
+    <div id="modal-body"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn-save" onclick="guardarItem()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══ DATOS ══
+const EQUIPO = [
+  {id:'mama',  nombre:'Mamá',    color:'#FFD700', inicial:'MA'},
+  {id:'papa',  nombre:'Papá',    color:'#2e6cc7', inicial:'PA'},
+  {id:'kata',  nombre:'Katalina',color:'#22c55e', inicial:'KA'},
+  {id:'todos', nombre:'Todos',   color:'#8b5cf6', inicial:'TO'},
+];
+
+let tareas = JSON.parse(localStorage.getItem('mc_tareas')||'[]');
+let reuniones = JSON.parse(localStorage.getItem('mc_reuniones')||'[]');
+let eventos = JSON.parse(localStorage.getItem('mc_eventos')||'[]');
+let semanaOffset = 0;
+let modalTipo = 'tarea';
+let editId = null;
+let filtroTareasActivo = 'todas';
+let filtroReunionesActivo = 'todas';
+
+// ══ LOGIN ══
+const USUARIO = 'mundodecampeones';
+const PASSWORD = 'MC123*';
+
+function intentarLogin() {
+  const user = document.getElementById('login-user').value.trim();
+  const pass = document.getElementById('login-pass').value;
+  const err = document.getElementById('login-error');
+  if (user === USUARIO && pass === PASSWORD) {
+    sessionStorage.setItem('mc_auth', '1');
+    document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('app-main').style.display = 'grid';
+    init();
+  } else {
+    err.style.display = 'block';
+    document.getElementById('login-pass').value = '';
+    setTimeout(() => err.style.display = 'none', 3000);
+  }
+}
+
+// Verificar sesión al cargar
+if (sessionStorage.getItem('mc_auth') === '1') {
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('app-main').style.display = 'grid';
+  init();
+}
+
+
+  // Fecha hoy
+  const hoy = new Date();
+  document.getElementById('fecha-hoy').textContent = hoy.toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long'});
+
+  // Avatares equipo
+  const cont = document.getElementById('equipo-avatars');
+  EQUIPO.forEach(m => {
+    const el = document.createElement('div');
+    el.className = 'avatar';
+    el.style.background = m.color + '33';
+    el.style.color = m.color;
+    el.style.border = '2px solid ' + m.color + '66';
+    el.textContent = m.inicial;
+    el.title = m.nombre;
+    cont.appendChild(el);
+  });
+
+  // Datos de ejemplo si no hay nada
+  if (!tareas.length) cargarEjemplos();
+
+  renderTodo();
+}
+
+function cargarEjemplos() {
+  const hoy = new Date();
+  const fmt = d => d.toISOString().split('T')[0];
+  const d = (n) => { const x = new Date(hoy); x.setDate(x.getDate()+n); return fmt(x); };
+
+  tareas = [
+    {id:1, nombre:'Publicar contenido Instagram — nueva colección', descripcion:'Reel vertical con los nuevos tenis', encargado:'kata', prioridad:'alta', estado:'pendiente', fecha:d(1), categoria:'Redes'},
+    {id:2, nombre:'Actualizar catálogo Google Sheets', descripcion:'Agregar 3 productos nuevos con fotos', encargado:'kata', prioridad:'media', estado:'en-progreso', fecha:d(0), categoria:'Web'},
+    {id:3, nombre:'Llamar proveedor tenis trail', descripcion:'Confirmar pedido y fecha de entrega', encargado:'papa', prioridad:'alta', estado:'pendiente', fecha:d(2), categoria:'Stock'},
+    {id:4, nombre:'Preparar ruta sábado de running', descripcion:'Ruta Mundo de Campeones 8K por el río', encargado:'mama', prioridad:'media', estado:'pendiente', fecha:d(5), categoria:'Comunidad'},
+    {id:5, nombre:'Responder mensajes WhatsApp pendientes', descripcion:'15 consultas sin responder', encargado:'todos', prioridad:'alta', estado:'completada', fecha:d(-1), categoria:'Ventas'},
+    {id:6, nombre:'Fotografiar nuevos productos', descripcion:'Camisetas técnicas y gorras nuevas', encargado:'kata', prioridad:'baja', estado:'pendiente', fecha:d(7), categoria:'Contenido'},
+  ];
+
+  reuniones = [
+    {id:1, titulo:'Reunión familiar semanal MC', fecha:fmt(hoy), hora:'18:00', duracion:'60', tipo:'presencial', lugar:'Casa familiar', asistentes:['mama','papa','kata'], notas:'Revisar ventas semana y planear siguiente'},
+    {id:2, titulo:'Sábado de Running — Ruta MC', fecha:d(5), hora:'06:00', duracion:'120', tipo:'carrera', lugar:'Local MC — Salida', asistentes:['mama','papa','kata','todos'], notas:'Llevar hidratación. Meta: 30 personas'},
+    {id:3, titulo:'Llamada proveedor Nike', fecha:d(3), hora:'10:00', duracion:'30', tipo:'virtual', lugar:'WhatsApp/Llamada', asistentes:['papa'], notas:'Negociar condiciones nuevo pedido'},
+  ];
+
+  eventos = [
+    {id:1, titulo:'Atención clientes', dia:1, horaInicio:9, horaFin:13, tipo:'trabajo', encargado:'papa'},
+    {id:2, titulo:'Contenido IG/TK', dia:2, horaInicio:15, horaFin:17, tipo:'trabajo', encargado:'kata'},
+    {id:3, titulo:'Reunión semanal', dia:3, horaInicio:18, horaFin:19, tipo:'reunion', encargado:'todos'},
+    {id:4, titulo:'Sábado Runner', dia:6, horaInicio:6, horaFin:8, tipo:'carrera', encargado:'todos'},
+    {id:5, titulo:'Actualizar catálogo', dia:4, horaInicio:10, horaFin:11, tipo:'trabajo', encargado:'kata'},
+  ];
+
+  guardarTodo();
+}
+
+function guardarTodo() {
+  localStorage.setItem('mc_tareas', JSON.stringify(tareas));
+  localStorage.setItem('mc_reuniones', JSON.stringify(reuniones));
+  localStorage.setItem('mc_eventos', JSON.stringify(eventos));
+}
+
+// ══ RENDER ══
+function renderTodo() {
+  renderKPIs();
+  renderTareas();
+  renderReuniones();
+  renderHorario();
+  renderDashboard();
+}
+
+function renderKPIs() {
+  const hoy = new Date().toISOString().split('T')[0];
+  const pendientes = tareas.filter(t => t.estado !== 'completada').length;
+  const completadas = tareas.filter(t => t.estado === 'completada').length;
+  const vencidas = tareas.filter(t => t.estado !== 'completada' && t.fecha < hoy).length;
+  const reunionesHoy = reuniones.filter(r => r.fecha === hoy).length;
+  document.getElementById('kpi-pendientes').textContent = pendientes;
+  document.getElementById('kpi-completadas').textContent = completadas;
+  document.getElementById('kpi-vencidas').textContent = vencidas;
+  document.getElementById('kpi-reuniones').textContent = reunionesHoy;
+}
+
+function renderDashboard() {
+  const cont1 = document.getElementById('dash-tareas-proximas');
+  const proximas = tareas.filter(t=>t.estado!=='completada').sort((a,b)=>a.fecha.localeCompare(b.fecha)).slice(0,4);
+  if (!proximas.length) { cont1.innerHTML = '<div class="empty"><div class="empty-icon">✅</div><div class="empty-txt">¡Todo al día!</div></div>'; }
+  else {
+    cont1.innerHTML = proximas.map(t => `
+      <div style="display:flex;align-items:center;gap:.75rem;padding:.6rem 0;border-bottom:1px solid var(--borde)">
+        <div style="width:8px;height:8px;border-radius:50%;background:${t.prioridad==='alta'?'var(--rojo)':t.prioridad==='media'?'var(--naranja)':'var(--verde)'};flex-shrink:0"></div>
+        <div style="flex:1;font-size:.85rem;font-weight:500">${t.nombre}</div>
+        <div style="font-size:.72rem;color:var(--muted)">${formatFecha(t.fecha)}</div>
+      </div>`).join('');
+  }
+
+  const cont2 = document.getElementById('dash-reuniones-proximas');
+  const proximasR = [...reuniones].sort((a,b)=>a.fecha.localeCompare(b.fecha)||a.hora.localeCompare(b.hora)).slice(0,4);
+  if (!proximasR.length) { cont2.innerHTML = '<div class="empty"><div class="empty-icon">📅</div><div class="empty-txt">Sin reuniones próximas</div></div>'; }
+  else {
+    cont2.innerHTML = proximasR.map(r => `
+      <div style="display:flex;align-items:center;gap:.75rem;padding:.6rem 0;border-bottom:1px solid var(--borde)">
+        <div style="font-family:'Oswald',sans-serif;font-size:1rem;font-weight:700;color:var(--am);min-width:44px">${r.hora}</div>
+        <div style="flex:1">
+          <div style="font-size:.85rem;font-weight:500">${r.titulo}</div>
+          <div style="font-size:.72rem;color:var(--muted)">${formatFecha(r.fecha)}</div>
+        </div>
+      </div>`).join('');
+  }
+}
+
+function renderTareas() {
+  const cont = document.getElementById('lista-tareas');
+  let lista = [...tareas];
+  if (filtroTareasActivo === 'alta') lista = lista.filter(t => t.prioridad === 'alta');
+  else if (filtroTareasActivo !== 'todas') lista = lista.filter(t => t.estado === filtroTareasActivo);
+  lista.sort((a,b) => {
+    const ord = {alta:0,media:1,baja:2};
+    return (ord[a.prioridad]||1) - (ord[b.prioridad]||1) || a.fecha.localeCompare(b.fecha);
+  });
+
+  if (!lista.length) {
+    cont.innerHTML = '<div class="empty"><div class="empty-icon">🎯</div><div class="empty-txt">No hay tareas aquí</div></div>';
+    return;
+  }
+
+  cont.innerHTML = lista.map(t => {
+    const miembro = EQUIPO.find(m => m.id === t.encargado) || EQUIPO[3];
+    const hoy = new Date().toISOString().split('T')[0];
+    const vencida = t.estado !== 'completada' && t.fecha < hoy;
+    return `
+    <div class="tarea" id="tarea-${t.id}" style="${vencida?'border-color:rgba(239,68,68,.3)':''}">
+      <div class="tarea-check ${t.estado==='completada'?'done':''}" onclick="toggleTarea(${t.id})"></div>
+      <div class="tarea-info">
+        <div class="tarea-nombre ${t.estado==='completada'?'tachado':''}">${t.nombre}</div>
+        <div class="tarea-meta">
+          <span>📁 ${t.categoria||'General'}</span>
+          <span style="color:${vencida?'var(--rojo)':''}">📅 ${formatFecha(t.fecha)}${vencida?' ⚠️':''}</span>
+        </div>
+      </div>
+      <span class="tarea-prioridad p-${t.prioridad}">${t.prioridad}</span>
+      <div class="tarea-asignado" style="color:${miembro.color}">
+        <div style="width:28px;height:28px;border-radius:50%;background:${miembro.color}22;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;border:1.5px solid ${miembro.color}55">${miembro.inicial}</div>
+      </div>
+      <div class="tarea-acciones">
+        <button class="btn-icon" onclick="editarTarea(${t.id})" title="Editar">✏️</button>
+        <button class="btn-icon" onclick="borrarTarea(${t.id})" title="Borrar">🗑️</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderReuniones() {
+  const cont = document.getElementById('lista-reuniones');
+  let lista = [...reuniones];
+  if (filtroReunionesActivo !== 'todas') lista = lista.filter(r => r.tipo === filtroReunionesActivo);
+  lista.sort((a,b) => a.fecha.localeCompare(b.fecha) || a.hora.localeCompare(b.hora));
+
+  if (!lista.length) {
+    cont.innerHTML = '<div class="empty"><div class="empty-icon">📅</div><div class="empty-txt">No hay reuniones programadas</div></div>';
+    return;
+  }
+
+  cont.innerHTML = lista.map(r => {
+    const asistentesHTML = (r.asistentes||[]).map(aid => {
+      const m = EQUIPO.find(x=>x.id===aid);
+      if (!m) return '';
+      return `<div style="width:26px;height:26px;border-radius:50%;background:${m.color}33;color:${m.color};display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;border:1.5px solid ${m.color}55" title="${m.nombre}">${m.inicial}</div>`;
+    }).join('');
+    return `
+    <div class="reunion">
+      <div class="reunion-hora">${r.hora}<small>${formatFecha(r.fecha)}</small></div>
+      <div class="reunion-sep"></div>
+      <div class="reunion-info">
+        <div class="reunion-titulo">${r.titulo}</div>
+        <div class="reunion-meta">
+          <span>📍 ${r.lugar||'Por definir'}</span>
+          <span>⏱ ${r.duracion||'?'} min</span>
+        </div>
+      </div>
+      <span class="reunion-tipo rt-${r.tipo}">${r.tipo}</span>
+      <div class="reunion-asistentes">${asistentesHTML}</div>
+      <div class="tarea-acciones">
+        <button class="btn-icon" onclick="borrarReunion(${r.id})" title="Borrar">🗑️</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderHorario() {
+  const grid = document.getElementById('horario-grid');
+  const hoy = new Date();
+  const lunes = new Date(hoy);
+  const dia = hoy.getDay() || 7;
+  lunes.setDate(hoy.getDate() - dia + 1 + semanaOffset * 7);
+
+  const dias = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+  const horas = Array.from({length:14}, (_,i) => i+6); // 6am-8pm
+
+  const fechaLunes = new Date(lunes);
+  const fechaDom = new Date(lunes); fechaDom.setDate(lunes.getDate()+6);
+  document.getElementById('semana-label').textContent =
+    `${lunes.getDate()} ${lunes.toLocaleDateString('es',{month:'short'})} — ${fechaDom.getDate()} ${fechaDom.toLocaleDateString('es',{month:'short',year:'numeric'})}`;
+
+  let html = '<div class="hora-header"></div>';
+  dias.forEach((d,i) => {
+    const fecha = new Date(lunes); fecha.setDate(lunes.getDate()+i);
+    const esHoy = fecha.toDateString() === hoy.toDateString();
+    html += `<div class="dia-header ${esHoy?'hoy':''}">${d}<br><small style="font-family:'DM Sans';font-weight:400;font-size:.7rem;opacity:.6">${fecha.getDate()}</small></div>`;
+  });
+
+  horas.forEach(h => {
+    html += `<div class="hora-slot">${h}:00</div>`;
+    for (let d=0; d<7; d++) {
+      const evs = eventos.filter(e => e.dia === d && e.horaInicio <= h && e.horaFin > h);
+      const evsHTML = evs.map(e => {
+        const cls = e.tipo==='reunion'?'ev-reunion':e.tipo==='carrera'?'ev-carrera':e.tipo==='entrega'?'ev-entrega':'ev-trabajo';
+        return `<div class="evento ${cls}">${e.titulo}</div>`;
+      }).join('');
+      html += `<div class="evento-slot">${evsHTML}</div>`;
+    }
+  });
+
+  grid.innerHTML = html;
+}
+
+// ══ ACCIONES ══
+function cambiarVista(vista, el) {
+  document.querySelectorAll('.vista').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('v-'+vista).classList.add('active');
+  if (el) el.classList.add('active');
+}
+
+function cambiarSemana(n) { semanaOffset += n; renderHorario(); }
+function irHoy() { semanaOffset = 0; renderHorario(); }
+
+function toggleTarea(id) {
+  const t = tareas.find(x=>x.id===id);
+  if (!t) return;
+  t.estado = t.estado === 'completada' ? 'pendiente' : 'completada';
+  guardarTodo(); renderTodo();
+}
+
+function borrarTarea(id) {
+  if (!confirm('¿Borrar esta tarea?')) return;
+  tareas = tareas.filter(t=>t.id!==id);
+  guardarTodo(); renderTodo();
+}
+
+function borrarReunion(id) {
+  if (!confirm('¿Borrar esta reunión?')) return;
+  reuniones = reuniones.filter(r=>r.id!==id);
+  guardarTodo(); renderTodo();
+}
+
+function editarTarea(id) {
+  editId = id;
+  abrirModal('tarea');
+}
+
+function filtrarTareas(f, el) {
+  filtroTareasActivo = f;
+  document.querySelectorAll('#v-tareas .filtro').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  renderTareas();
+}
+
+function filtrarReuniones(f, el) {
+  filtroReunionesActivo = f;
+  document.querySelectorAll('#v-reuniones .filtro').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  renderReuniones();
+}
+
+function filtrarEncargado(enc) {
+  // placeholder
+}
+
+// ══ MODAL ══
+function abrirModal(tipo) {
+  modalTipo = tipo || 'tarea';
+  const overlay = document.getElementById('modal-overlay');
+  const titulo = document.getElementById('modal-titulo');
+  const body = document.getElementById('modal-body');
+
+  const equipoOpts = EQUIPO.map(m=>`<option value="${m.id}">${m.nombre}</option>`).join('');
+  const tarea = editId ? tareas.find(t=>t.id===editId) : null;
+
+  if (modalTipo === 'tarea') {
+    titulo.textContent = tarea ? 'Editar Tarea' : 'Nueva Tarea';
+    body.innerHTML = `
+      <div class="form-group">
+        <label class="form-label">Nombre de la tarea *</label>
+        <input class="form-input" id="f-nombre" placeholder="Ej: Publicar en Instagram" value="${tarea?.nombre||''}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Descripción</label>
+        <textarea class="form-textarea" id="f-desc" placeholder="Detalles adicionales...">${tarea?.descripcion||''}</textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Encargado</label>
+          <select class="form-select" id="f-encargado">${equipoOpts}</select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Categoría</label>
+          <select class="form-select" id="f-cat">
+            <option>Ventas</option><option>Stock</option><option>Redes</option>
+            <option>Web</option><option>Comunidad</option><option>Contenido</option><option>General</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Prioridad</label>
+          <select class="form-select" id="f-prioridad">
+            <option value="alta">🔴 Alta</option>
+            <option value="media" selected>🟡 Media</option>
+            <option value="baja">🟢 Baja</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Fecha límite</label>
+          <input class="form-input" type="date" id="f-fecha" value="${tarea?.fecha||new Date().toISOString().split('T')[0]}">
+        </div>
+      </div>`;
+    if (tarea) {
+      setTimeout(() => {
+        document.getElementById('f-encargado').value = tarea.encargado;
+        document.getElementById('f-cat').value = tarea.categoria;
+        document.getElementById('f-prioridad').value = tarea.prioridad;
+      }, 10);
+    }
+  } else if (modalTipo === 'reunion') {
+    titulo.textContent = 'Nueva Reunión';
+    const hoy = new Date().toISOString().split('T')[0];
+    body.innerHTML = `
+      <div class="form-group">
+        <label class="form-label">Título *</label>
+        <input class="form-input" id="f-nombre" placeholder="Ej: Reunión semanal MC">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Fecha</label>
+          <input class="form-input" type="date" id="f-fecha" value="${hoy}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Hora</label>
+          <input class="form-input" type="time" id="f-hora" value="18:00">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Duración (min)</label>
+          <input class="form-input" id="f-duracion" placeholder="60" value="60">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tipo</label>
+          <select class="form-select" id="f-tipo">
+            <option value="presencial">Presencial</option>
+            <option value="virtual">Virtual</option>
+            <option value="carrera">🏃 Carrera/Evento</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Lugar / Link</label>
+        <input class="form-input" id="f-lugar" placeholder="Local MC / Zoom / Parque Caldas">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notas</label>
+        <textarea class="form-textarea" id="f-notas" placeholder="Agenda, objetivo..."></textarea>
+      </div>`;
+  } else if (modalTipo === 'evento') {
+    titulo.textContent = 'Nuevo Bloque de Horario';
+    body.innerHTML = `
+      <div class="form-group">
+        <label class="form-label">Título *</label>
+        <input class="form-input" id="f-nombre" placeholder="Ej: Atención clientes">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Día de la semana</label>
+          <select class="form-select" id="f-dia">
+            <option value="0">Lunes</option><option value="1">Martes</option>
+            <option value="2">Miércoles</option><option value="3">Jueves</option>
+            <option value="4">Viernes</option><option value="5">Sábado</option>
+            <option value="6">Domingo</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Encargado</label>
+          <select class="form-select" id="f-encargado">${equipoOpts}</select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Hora inicio</label>
+          <input class="form-input" type="number" id="f-hora-inicio" min="6" max="22" value="9">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Hora fin</label>
+          <input class="form-input" type="number" id="f-hora-fin" min="7" max="23" value="13">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tipo</label>
+        <select class="form-select" id="f-tipo">
+          <option value="trabajo">💼 Trabajo</option>
+          <option value="reunion">🤝 Reunión</option>
+          <option value="carrera">🏃 Carrera/Evento</option>
+          <option value="entrega">📦 Entrega</option>
+        </select>
+      </div>`;
+  }
+
+  overlay.classList.add('open');
+}
+
+function cerrarModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  editId = null;
+}
+
+function cerrarModalOverlay(e) {
+  if (e.target === document.getElementById('modal-overlay')) cerrarModal();
+}
+
+function guardarItem() {
+  const nombre = document.getElementById('f-nombre')?.value?.trim();
+  if (!nombre) { alert('El nombre es obligatorio'); return; }
+
+  if (modalTipo === 'tarea') {
+    if (editId) {
+      const t = tareas.find(x=>x.id===editId);
+      t.nombre = nombre;
+      t.descripcion = document.getElementById('f-desc').value;
+      t.encargado = document.getElementById('f-encargado').value;
+      t.categoria = document.getElementById('f-cat').value;
+      t.prioridad = document.getElementById('f-prioridad').value;
+      t.fecha = document.getElementById('f-fecha').value;
+    } else {
+      tareas.push({
+        id: Date.now(),
+        nombre,
+        descripcion: document.getElementById('f-desc').value,
+        encargado: document.getElementById('f-encargado').value,
+        categoria: document.getElementById('f-cat').value,
+        prioridad: document.getElementById('f-prioridad').value,
+        estado: 'pendiente',
+        fecha: document.getElementById('f-fecha').value,
+      });
+    }
+  } else if (modalTipo === 'reunion') {
+    reuniones.push({
+      id: Date.now(),
+      titulo: nombre,
+      fecha: document.getElementById('f-fecha').value,
+      hora: document.getElementById('f-hora').value,
+      duracion: document.getElementById('f-duracion').value,
+      tipo: document.getElementById('f-tipo').value,
+      lugar: document.getElementById('f-lugar').value,
+      notas: document.getElementById('f-notas').value,
+      asistentes: ['todos'],
+    });
+  } else if (modalTipo === 'evento') {
+    eventos.push({
+      id: Date.now(),
+      titulo: nombre,
+      dia: parseInt(document.getElementById('f-dia').value),
+      horaInicio: parseInt(document.getElementById('f-hora-inicio').value),
+      horaFin: parseInt(document.getElementById('f-hora-fin').value),
+      tipo: document.getElementById('f-tipo').value,
+      encargado: document.getElementById('f-encargado').value,
+    });
+  }
+
+  guardarTodo();
+  cerrarModal();
+  renderTodo();
+}
+
+// ══ UTILS ══
+function formatFecha(str) {
+  if (!str) return '—';
+  const d = new Date(str + 'T12:00:00');
+  const hoy = new Date();
+  const diff = Math.round((d - hoy) / 86400000);
+  if (diff === 0) return 'Hoy';
+  if (diff === 1) return 'Mañana';
+  if (diff === -1) return 'Ayer';
+  if (diff > 0 && diff < 7) return `En ${diff} días`;
+  return d.toLocaleDateString('es-CO', {day:'numeric', month:'short'});
+}
+
+</script>
+</body>
+</html>
