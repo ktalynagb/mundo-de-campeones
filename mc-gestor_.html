@@ -372,7 +372,7 @@ function intentarLogin() {
   const pass = document.getElementById('login-pass').value;
   const err = document.getElementById('login-error');
   if (user === USUARIO && pass === PASSWORD) {
-    sessionStorage.setItem('mc_auth', '1');
+    localStorage.setItem('mc_auth', '1');
     document.getElementById('login-screen').classList.add('hidden');
     document.getElementById('app-main').style.display = 'grid';
     init();
@@ -405,7 +405,7 @@ function init() {
 }
 
 // Verificar sesión al cargar
-if (sessionStorage.getItem('mc_auth') === '1') {
+if (localStorage.getItem('mc_auth') === '1') {
   document.getElementById('login-screen').classList.add('hidden');
   document.getElementById('app-main').style.display = 'grid';
   init();
