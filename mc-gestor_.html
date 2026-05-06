@@ -399,8 +399,9 @@ function init() {
     el.title = m.nombre;
     cont.appendChild(el);
   });
-  if (!tareas.length) cargarEjemplos();
-  renderTodo();
+ if (!localStorage.getItem('mc_iniciado')) {
+  cargarEjemplos();
+  localStorage.setItem('mc_iniciado', '1');
 }
 
 // Verificar sesión al cargar
