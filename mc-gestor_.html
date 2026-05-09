@@ -228,6 +228,7 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--gris-osc
     <div class="topbar-right">
       <div class="topbar-date" id="fecha-hoy"></div>
       <button class="btn-new" onclick="abrirModal()">+ Nuevo</button>
+      <button onclick="cerrarSesion()" style="background:transparent;border:1.5px solid rgba(255,255,255,.15);color:var(--muted);padding:.45rem .85rem;border-radius:8px;font-size:.8rem;cursor:pointer;transition:all .15s" onmouseover="this.style.borderColor='var(--rojo)';this.style.color='var(--rojo)'" onmouseout="this.style.borderColor='rgba(255,255,255,.15)';this.style.color='var(--muted)'">Salir</button>
     </div>
   </header>
 
@@ -721,6 +722,12 @@ function filtrarReuniones(f, el) {
 
 function filtrarEncargado() {}
 
+function cerrarSesion() {
+  if (!confirm('¿Cerrar sesión?')) return;
+  localStorage.removeItem('mc_auth');
+  location.reload();
+}
+
 // ══ MODAL ══
 function abrirModal(tipo) {
   modalTipo = tipo || 'tarea';
@@ -827,21 +834,8 @@ function toggleSidebar() {
 function excelFechaAStr(val) {
   if (!val) return '';
   const s = String(val).trim();
-  // Ya es YYYY-MM-DD
   if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
-  // Es ISO con T (ej: 1899-12-30T22:56:16.000Z) — número serial de Excel disfrazado
-  if (s.includes('T')) {
-    const n = new Date(s);
-    // Si el año es menor a 1970 es un serial de Excel
-    if (n.getFullYear() < 1970) {
-      // Convertir serial Excel: días desde 1900-01-01
-      const serial = (n.getTime() / 86400000) + 25569 + (n.getFullYear() < 1900 ? 0 : 0);
-      const real = new Date(Math.round(serial) * 86400000);
-      return real.toISOString().split('T')[0];
-    }
-    return s.split('T')[0];
-  }
-  // Es número serial puro
+  if (s.includes('T')) return s.split('T')[0];
   if (!isNaN(s)) {
     const d = new Date((Number(s) - 25569) * 86400000);
     return d.toISOString().split('T')[0];
