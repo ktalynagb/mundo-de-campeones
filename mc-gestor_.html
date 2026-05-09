@@ -175,18 +175,30 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--gris-osc
 ::-webkit-scrollbar-thumb{background:var(--borde);border-radius:10px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
+/* ── HAMBURGUESA ── */
+.hamburger{display:none;background:transparent;border:none;color:var(--blanco);font-size:1.4rem;cursor:pointer;padding:.2rem .4rem}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:150}
+.sidebar-overlay.open{display:block}
+.sidebar.mobile-open{display:block!important;position:fixed;top:60px;left:0;bottom:0;z-index:160;width:240px}
+
 /* ── RESPONSIVE ── */
 @media(max-width:768px){
-  .app{grid-template-columns:1fr;grid-template-rows:60px auto 1fr}
+  .app{grid-template-columns:1fr;grid-template-rows:60px 1fr}
   .sidebar{display:none}
+  .hamburger{display:block}
   .kpi-grid{grid-template-columns:1fr 1fr}
   .dash-grid{grid-template-columns:1fr}
   .horario-grid{grid-template-columns:50px repeat(7,1fr)}
   .tarea{grid-template-columns:auto 1fr auto}
+  .reunion{flex-wrap:wrap}
+  .form-row{grid-template-columns:1fr}
 }
 </style>
 </head>
 <body>
+<!-- SIDEBAR OVERLAY -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
 <!-- LOGIN -->
 <div class="login-screen" id="login-screen">
   <div class="login-box">
@@ -209,6 +221,7 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--gris-osc
 
   <!-- TOPBAR -->
   <header class="topbar">
+    <button class="hamburger" onclick="toggleSidebar()">☰</button>
     <div class="topbar-logo">MC<span>.</span></div>
     <div class="topbar-sep"></div>
     <div class="topbar-title">Gestor Operativo</div>
@@ -423,7 +436,7 @@ function tareasAFilas(lista) {
 function filasATareas(filas) {
   return filas.filter(f => f[0]).map(f => ({
     id: f[0], nombre: f[1], descripcion: f[2], encargado: f[3],
-    prioridad: f[4], estado: f[5], fecha: f[6], categoria: f[7]
+    prioridad: f[4], estado: f[5], fecha: excelFechaAStr(f[6]), categoria: f[7]
   }));
 }
 
@@ -432,8 +445,8 @@ function reunionesAFilas(lista) {
 }
 function filasAReuniones(filas) {
   return filas.filter(f => f[0]).map(f => ({
-    id: f[0], titulo: f[1], fecha: f[2], hora: f[3], duracion: f[4],
-    tipo: f[5], lugar: f[6], notas: f[7], asistentes: f[8] ? f[8].split(',') : []
+    id: f[0], titulo: f[1], fecha: excelFechaAStr(f[2]), hora: f[3], duracion: f[4],
+    tipo: f[5], lugar: f[6], notas: f[7], asistentes: f[8] ? String(f[8]).split(',') : [], fecha: excelFechaAStr(f[2])
   }));
 }
 
@@ -802,7 +815,30 @@ async function guardarItem() {
   await guardarTodo();
 }
 
+// ══ SIDEBAR MÓVIL ══
+function toggleSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  sidebar.classList.toggle('mobile-open');
+  overlay.classList.toggle('open');
+}
+
 // ══ UTILS ══
+function excelFechaAStr(val) {
+  if (!val) return '';
+  // Si ya es string tipo fecha YYYY-MM-DD, retornar directo
+  if (typeof val === 'string' && /^\d{4}-\d{2}-\d{2}/.test(val)) return val.split('T')[0];
+  // Si es número (formato Excel serial)
+  if (typeof val === 'number' || (typeof val === 'string' && !isNaN(val))) {
+    const n = Number(val);
+    const d = new Date((n - 25569) * 86400000);
+    return d.toISOString().split('T')[0];
+  }
+  // Si es fecha ISO completa
+  if (typeof val === 'string' && val.includes('T')) return val.split('T')[0];
+  return String(val);
+}
+
 function formatFecha(str) {
   if (!str) return '—';
   const d = new Date(str + 'T12:00:00');
