@@ -193,6 +193,9 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--gris-osc
   .reunion{flex-wrap:wrap}
   .form-row{grid-template-columns:1fr}
 }
+
+.btn-salir{background:transparent;border:1.5px solid rgba(255,255,255,.2);color:var(--muted);padding:.45rem .85rem;border-radius:8px;font-size:.8rem;cursor:pointer;transition:border-color .2s,color .2s;white-space:nowrap}
+.btn-salir:hover{border-color:var(--rojo);color:var(--rojo)}
 </style>
 </head>
 <body>
@@ -228,7 +231,7 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--gris-osc
     <div class="topbar-right">
       <div class="topbar-date" id="fecha-hoy"></div>
       <button class="btn-new" onclick="abrirModal()">+ Nuevo</button>
-      <button onclick="cerrarSesion()" style="background:transparent;border:1.5px solid rgba(255,255,255,.15);color:var(--muted);padding:.45rem .85rem;border-radius:8px;font-size:.8rem;cursor:pointer;transition:all .15s" onmouseover="this.style.borderColor='var(--rojo)';this.style.color='var(--rojo)'" onmouseout="this.style.borderColor='rgba(255,255,255,.15)';this.style.color='var(--muted)'">Salir</button>
+      <button onclick="cerrarSesion()" class="btn-salir">⏻ Salir</button>
     </div>
   </header>
 
@@ -847,7 +850,9 @@ function formatFecha(str) {
   if (!str) return '—';
   const d = new Date(str + 'T12:00:00');
   const hoy = new Date();
-  const diff = Math.round((d - hoy) / 86400000);
+  const hoyStr = hoy.toISOString().split('T')[0];
+  const dStr = str.slice(0, 10);
+  const diff = Math.round((new Date(dStr) - new Date(hoyStr)) / 86400000);
   if (diff === 0) return 'Hoy';
   if (diff === 1) return 'Mañana';
   if (diff === -1) return 'Ayer';
