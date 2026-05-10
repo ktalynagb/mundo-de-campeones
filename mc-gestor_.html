@@ -867,7 +867,10 @@ async function guardarItem() {
         lugar: nuevaReunion.lugar,
         notas: nuevaReunion.notas
       })
-    }).catch(err => console.log('Calendar error:', err));
+    })
+    .then(r => r.json())
+    .then(r => console.log('Calendar respuesta:', JSON.stringify(r)))
+    .catch(err => console.log('Calendar error:', err));
   } else if (modalTipo === 'evento') {
     eventos.push({id:Date.now(), titulo:nombre, dia:parseInt(document.getElementById('f-dia').value), horaInicio:parseInt(document.getElementById('f-hora-inicio').value), horaFin:parseInt(document.getElementById('f-hora-fin').value), tipo:document.getElementById('f-tipo').value, encargado:document.getElementById('f-encargado').value});
   }
