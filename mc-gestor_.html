@@ -113,16 +113,17 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--gris-osc
 .semana-nav button:hover{background:var(--gris-claro)}
 .semana-label{font-family:'Oswald',sans-serif;font-size:1.1rem;font-weight:600;letter-spacing:.04em}
 
-.horario-grid{display:grid;grid-template-columns:60px repeat(7,1fr);gap:0;border-radius:14px;overflow:hidden;border:1px solid var(--borde)}
+.horario-grid{display:grid;grid-template-columns:44px repeat(7,1fr);gap:0;border-radius:14px;overflow:hidden;border:1px solid var(--borde);font-size:.7rem}
 .hora-col,.dia-col{display:contents}
 .hora-header,.dia-header{background:var(--gris);padding:.65rem .5rem;text-align:center;font-size:.78rem;font-weight:600;border-bottom:1px solid var(--borde)}
 .hora-header{color:var(--muted);font-size:.7rem}
-.dia-header{font-family:'Oswald',sans-serif;letter-spacing:.04em}
+.dia-header{font-family:'Oswald',sans-serif;letter-spacing:.02em;font-size:.72rem;padding:.5rem .2rem}
 .dia-header.hoy{color:var(--am)}
-.hora-slot{background:var(--gris-osc);border-right:1px solid var(--borde);border-bottom:1px solid rgba(255,255,255,.04);padding:.3rem .4rem;font-size:.68rem;color:var(--muted);text-align:right;min-height:44px}
+.hora-slot{background:var(--gris-osc);border-right:1px solid var(--borde);border-bottom:1px solid rgba(255,255,255,.04);padding:.2rem .3rem;font-size:.62rem;color:var(--muted);text-align:right;min-height:36px;line-height:36px}
+.evento-slot{background:var(--gris-osc);border-right:1px solid var(--borde);border-bottom:1px solid rgba(255,255,255,.04);min-height:36px;padding:.15rem .1rem;position:relative;cursor:pointer}.hora-slot{background:var(--gris-osc);border-right:1px solid var(--borde);border-bottom:1px solid rgba(255,255,255,.04);padding:.3rem .4rem;font-size:.68rem;color:var(--muted);text-align:right;min-height:44px}
 .evento-slot{background:var(--gris-osc);border-right:1px solid var(--borde);border-bottom:1px solid rgba(255,255,255,.04);min-height:44px;padding:.2rem;position:relative;cursor:pointer}
 .evento-slot:hover{background:rgba(255,255,255,.03)}
-.evento{border-radius:6px;padding:.25rem .5rem;font-size:.7rem;font-weight:600;cursor:pointer;margin-bottom:2px;transition:opacity .15s}
+.evento{border-radius:4px;padding:.15rem .25rem;font-size:.6rem;font-weight:600;cursor:pointer;margin-bottom:1px;transition:opacity .15s;line-height:1.2;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 .evento:hover{opacity:.85}
 .ev-reunion{background:rgba(46,108,199,.4);border-left:3px solid var(--azul-c);color:#93c5fd}
 .ev-carrera{background:rgba(255,215,0,.15);border-left:3px solid var(--am);color:var(--am)}
@@ -182,26 +183,31 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--gris-osc
 .sidebar.mobile-open{display:block!important;position:fixed;top:60px;left:0;bottom:0;z-index:160;width:240px}
 
 /* ── RESPONSIVE ── */
+.btn-salir{background:transparent;border:1.5px solid rgba(255,255,255,.2);color:var(--muted);padding:.45rem .85rem;border-radius:8px;font-size:.8rem;cursor:pointer;transition:border-color .2s,color .2s;white-space:nowrap}
+.btn-salir:hover{border-color:var(--rojo);color:var(--rojo)}
+
 @media(max-width:768px){
   .app{grid-template-columns:1fr;grid-template-rows:60px 1fr}
   .sidebar{display:none}
   .hamburger{display:block}
   .kpi-grid{grid-template-columns:1fr 1fr}
   .dash-grid{grid-template-columns:1fr}
-  .horario-grid{grid-template-columns:50px repeat(7,1fr)}
+  .horario-grid{grid-template-columns:36px repeat(7,1fr)}
   .tarea{grid-template-columns:auto 1fr auto}
   .reunion{flex-wrap:wrap}
   .form-row{grid-template-columns:1fr}
-}
-
-.btn-salir{background:transparent;border:1.5px solid rgba(255,255,255,.2);color:var(--muted);padding:.45rem .85rem;border-radius:8px;font-size:.8rem;cursor:pointer;transition:border-color .2s,color .2s;white-space:nowrap}
-.btn-salir:hover{border-color:var(--rojo);color:var(--rojo)}
-@media(max-width:768px){
   .topbar-sep,.topbar-title{display:none}
   .topbar-date{font-size:.7rem;max-width:70px;line-height:1.2;text-align:center}
   .btn-new{padding:.4rem .7rem;font-size:.78rem}
   .btn-salir{padding:.4rem .6rem;font-size:.75rem}
   .topbar{gap:.4rem;padding:0 .75rem}
+  .dia-header{font-size:.62rem;padding:.4rem .1rem}
+  .hora-slot{font-size:.55rem;padding:.1rem .2rem;min-height:32px;line-height:32px}
+  .evento-slot{min-height:32px}
+  .evento{font-size:.55rem;padding:.1rem .2rem}
+  .semana-nav{flex-wrap:wrap;gap:.5rem}
+  .semana-nav button{font-size:.75rem;padding:.35rem .65rem}
+  .semana-label{font-size:.9rem;width:100%;text-align:center;order:-1}
 }
 </style>
 </head>
@@ -461,8 +467,8 @@ function filasAReuniones(filas) {
     if (horaStr.includes('T')) {
       // Es un ISO datetime: 1899-12-30T22:56:16.000Z → extraer HH:MM en hora local
       const d = new Date(horaStr);
-      const h = String(d.getUTCHours()).padStart(2,'0');
-      const m = String(d.getUTCMinutes()).padStart(2,'0');
+      const h = String(d.getHours()).padStart(2,'0');
+      const m = String(d.getMinutes()).padStart(2,'0');
       horaStr = `${h}:${m}`;
     }
     return {
