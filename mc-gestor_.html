@@ -113,7 +113,8 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--gris-osc
 .semana-nav button:hover{background:var(--gris-claro)}
 .semana-label{font-family:'Oswald',sans-serif;font-size:1.1rem;font-weight:600;letter-spacing:.04em}
 
-.horario-grid{display:grid;grid-template-columns:44px repeat(7,1fr);gap:0;border-radius:14px;overflow:hidden;border:1px solid var(--borde);font-size:.7rem}
+.horario-grid{display:grid;grid-template-columns:44px repeat(7,1fr);gap:0;border-radius:14px;overflow:hidden;border:1px solid var(--borde);font-size:.7rem;min-width:600px}
+.horario-wrapper{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:14px}
 .hora-col,.dia-col{display:contents}
 .hora-header,.dia-header{background:var(--gris);padding:.65rem .5rem;text-align:center;font-size:.78rem;font-weight:600;border-bottom:1px solid var(--borde)}
 .hora-header{color:var(--muted);font-size:.7rem}
@@ -342,7 +343,9 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--gris-osc
         <button onclick="cambiarSemana(1)">Siguiente →</button>
         <button onclick="irHoy()" style="margin-left:auto">Hoy</button>
       </div>
-      <div class="horario-grid" id="horario-grid"></div>
+      <div class="horario-wrapper">
+        <div class="horario-grid" id="horario-grid"></div>
+      </div>
     </div>
 
     <!-- REUNIONES -->
