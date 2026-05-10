@@ -192,6 +192,7 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--gris-osc
   .hamburger{display:block}
   .kpi-grid{grid-template-columns:1fr 1fr}
   .dash-grid{grid-template-columns:1fr}
+  .horario-grid{grid-template-columns:36px repeat(7,1fr)}
   .tarea{grid-template-columns:auto 1fr auto}
   .reunion{flex-wrap:wrap}
   .form-row{grid-template-columns:1fr}
@@ -697,7 +698,7 @@ function renderHorario() {
       const evs = eventos.filter(e => e.dia === d && e.horaInicio <= h && e.horaFin > h);
       const evsHTML = evs.map(e => {
         const cls = e.tipo==='reunion'?'ev-reunion':e.tipo==='carrera'?'ev-carrera':e.tipo==='entrega'?'ev-entrega':'ev-trabajo';
-        return `<div class="evento ${cls}">${e.titulo}</div>`;
+        return `<div class="evento ${cls}" onclick="borrarEvento(${e.id},event)">${e.titulo} <span style="opacity:.7;font-size:.65rem">✕</span></div>`;
       }).join('');
       html += `<div class="evento-slot">${evsHTML}</div>`;
     }
@@ -728,6 +729,14 @@ async function borrarTarea(id) {
   if (!confirm('¿Borrar esta tarea?')) return;
   tareas = tareas.filter(t=>t.id!=id);
   renderTodo();
+  await guardarTodo();
+}
+
+async function borrarEvento(id, e) {
+  e.stopPropagation();
+  if (!confirm('¿Borrar este evento del horario?')) return;
+  eventos = eventos.filter(ev => ev.id != id);
+  renderHorario();
   await guardarTodo();
 }
 
