@@ -929,16 +929,17 @@ function excelFechaAStr(val) {
 
 function formatFecha(str) {
   if (!str) return '—';
-  const d = new Date(str + 'T12:00:00');
-  const hoy = new Date();
-  const hoyStr = hoy.toISOString().split('T')[0];
   const dStr = str.slice(0, 10);
-  const diff = Math.round((new Date(dStr) - new Date(hoyStr)) / 86400000);
+  const [y, m, d] = dStr.split('-').map(Number);
+  const fecha = new Date(y, m - 1, d);
+  const hoy = new Date();
+  const hoyLocal = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+  const diff = Math.round((fecha - hoyLocal) / 86400000);
   if (diff === 0) return 'Hoy';
   if (diff === 1) return 'Mañana';
   if (diff === -1) return 'Ayer';
   if (diff > 0 && diff < 7) return `En ${diff} días`;
-  return d.toLocaleDateString('es-CO', {day:'numeric', month:'short'});
+  return fecha.toLocaleDateString('es-CO', {day:'numeric', month:'short'});
 }
 
 // ══ ARRANQUE ══
