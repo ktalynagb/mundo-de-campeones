@@ -462,13 +462,21 @@ function filasAReuniones(filas) {
     let horaStr = String(f[3]||'').trim();
     if (horaStr.includes('T')) {
       const d = new Date(horaStr);
-      const h = String(d.getHours()).padStart(2,'0');
-      const m = String(d.getMinutes()).padStart(2,'0');
-      horaStr = `${h}:${m}`;
+      horaStr = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+    } else if (!isNaN(horaStr) && horaStr !== '') {
+      const totalMin = Math.round(parseFloat(horaStr) * 24 * 60);
+      const hh = Math.floor(totalMin / 60) % 24;
+      const mm = totalMin % 60;
+      horaStr = String(hh).padStart(2,'0') + ':' + String(mm).padStart(2,'0');
+    }
+    let fechaStr = excelFechaAStr(f[2]);
+    // Si la fecha viene como ISO completo con hora
+    if (String(f[2]).includes('T')) {
+      fechaStr = String(f[2]).split('T')[0];
     }
     return {
       id: f[0], titulo: f[1],
-      fecha: excelFechaAStr(f[2]),
+      fecha: fechaStr,
       hora: horaStr,
       duracion: f[4], tipo: f[5],
       lugar: f[6], notas: f[7],
