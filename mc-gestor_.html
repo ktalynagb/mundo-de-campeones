@@ -460,14 +460,12 @@ function filasATareas(filas) {
 }
 
 function reunionesAFilas(lista) {
-  return lista.map(r => [r.id, r.titulo, r.fecha, r.hora, r.duracion||60, r.tipo, r.lugar||'', r.notas||'', (r.asistentes||[]).join(',')]);
+  return lista.map(r => [r.id, r.titulo, r.fecha, r.hora, r.duracion||60, r.tipo, r.lugar||'', r.notas||'', (r.asistentes||[]).join(','), r.calendarId||'']);
 }
 function filasAReuniones(filas) {
   return filas.filter(f => f[0]).map(f => {
-    // Extraer hora del campo hora o del ISO de fecha
     let horaStr = String(f[3]||'').trim();
     if (horaStr.includes('T')) {
-      // Es un ISO datetime: 1899-12-30T22:56:16.000Z → extraer HH:MM en hora local
       const d = new Date(horaStr);
       const h = String(d.getHours()).padStart(2,'0');
       const m = String(d.getMinutes()).padStart(2,'0');
@@ -479,7 +477,8 @@ function filasAReuniones(filas) {
       hora: horaStr,
       duracion: f[4], tipo: f[5],
       lugar: f[6], notas: f[7],
-      asistentes: f[8] ? String(f[8]).split(',') : []
+      asistentes: f[8] ? String(f[8]).split(',') : [],
+      calendarId: f[9]||''
     };
   });
 }
