@@ -532,7 +532,6 @@ async function init() {
   reuniones = filasAReuniones(fr);
   eventos = filasAEventos(fe);
 
-  if (!tareas.length && !reuniones.length) cargarEjemplos();
   mostrarCargando(false);
   renderTodo();
 }
