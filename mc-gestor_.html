@@ -392,7 +392,7 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbzGrRV39SpGZtXn3vAhMAaU
 const EQUIPO = [
   {id:'mama',  nombre:'Mamá',    color:'#FFD700', inicial:'MA'},
   {id:'papa',  nombre:'Papá',    color:'#2e6cc7', inicial:'PA'},
-  {id:'kata',  nombre:'Katalina',color:'#22c55e', inicial:'KA'},
+  {id:'kta',  nombre:'Ktalyna',color:'#22c55e', inicial:'KA'},
   {id:'todos', nombre:'Todos',   color:'#8b5cf6', inicial:'TO'},
 ];
 
@@ -548,19 +548,19 @@ function cargarEjemplos() {
   const d = (n) => { const x = new Date(hoy); x.setDate(x.getDate()+n); return fmt(x); };
 
   tareas = [
-    {id:1, nombre:'Publicar contenido Instagram — nueva colección', descripcion:'Reel vertical con los nuevos tenis', encargado:'kata', prioridad:'alta', estado:'pendiente', fecha:d(1), categoria:'Redes'},
-    {id:2, nombre:'Actualizar catálogo Google Sheets', descripcion:'Agregar 3 productos nuevos con fotos', encargado:'kata', prioridad:'media', estado:'en-progreso', fecha:d(0), categoria:'Web'},
+    {id:1, nombre:'Publicar contenido Instagram — nueva colección', descripcion:'Reel vertical con los nuevos tenis', encargado:'kta', prioridad:'alta', estado:'pendiente', fecha:d(1), categoria:'Redes'},
+    {id:2, nombre:'Actualizar catálogo Google Sheets', descripcion:'Agregar 3 productos nuevos con fotos', encargado:'kta', prioridad:'media', estado:'en-progreso', fecha:d(0), categoria:'Web'},
     {id:3, nombre:'Llamar proveedor tenis trail', descripcion:'Confirmar pedido y fecha de entrega', encargado:'papa', prioridad:'alta', estado:'pendiente', fecha:d(2), categoria:'Stock'},
     {id:4, nombre:'Preparar ruta sábado de running', descripcion:'Ruta MC 8K por el río', encargado:'mama', prioridad:'media', estado:'pendiente', fecha:d(5), categoria:'Comunidad'},
     {id:5, nombre:'Responder mensajes WhatsApp pendientes', descripcion:'15 consultas sin responder', encargado:'todos', prioridad:'alta', estado:'completada', fecha:d(-1), categoria:'Ventas'},
   ];
   reuniones = [
-    {id:1, titulo:'Reunión familiar semanal MC', fecha:fmt(hoy), hora:'18:00', duracion:60, tipo:'presencial', lugar:'Casa familiar', asistentes:['mama','papa','kata'], notas:'Revisar ventas semana'},
+    {id:1, titulo:'Reunión familiar semanal MC', fecha:fmt(hoy), hora:'18:00', duracion:60, tipo:'presencial', lugar:'Casa familiar', asistentes:['mama','papa','kta'], notas:'Revisar ventas semana'},
     {id:2, titulo:'Sábado de Running — Ruta MC', fecha:d(5), hora:'06:00', duracion:120, tipo:'carrera', lugar:'Local MC', asistentes:['todos'], notas:'Meta: 30 personas'},
   ];
   eventos = [
     {id:1, titulo:'Atención clientes', dia:0, horaInicio:9, horaFin:13, tipo:'trabajo', encargado:'papa'},
-    {id:2, titulo:'Contenido IG/TK', dia:1, horaInicio:15, horaFin:17, tipo:'trabajo', encargado:'kata'},
+    {id:2, titulo:'Contenido IG/TK', dia:1, horaInicio:15, horaFin:17, tipo:'trabajo', encargado:'kta'},
     {id:3, titulo:'Reunión semanal', dia:2, horaInicio:18, horaFin:19, tipo:'reunion', encargado:'todos'},
     {id:4, titulo:'Sábado Runner', dia:5, horaInicio:6, horaFin:8, tipo:'carrera', encargado:'todos'},
   ];
