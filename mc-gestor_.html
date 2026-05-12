@@ -455,7 +455,7 @@ function filasATareas(filas) {
 }
 
 function reunionesAFilas(lista) {
-  return lista.map(r => [r.id, r.titulo, r.fecha, r.hora, r.duracion||60, r.tipo, r.lugar||'', r.notas||'', (r.asistentes||[]).join(','), r.calendarId||'']);
+  return lista.map(r => [r.id, r.titulo, String(r.fecha||''), String(r.hora||''), r.duracion||60, r.tipo, r.lugar||'', r.notas||'', (r.asistentes||[]).join(','), r.calendarId||'']);
 }
 function filasAReuniones(filas) {
   return filas.filter(f => f[0]).map(f => {
