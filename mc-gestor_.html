@@ -860,7 +860,10 @@ async function guardarItem() {
       fetch(API_URL, {
         method:'POST',
         body: JSON.stringify({accion:'crearTarea', titulo:nuevaTarea.nombre, fecha:nuevaTarea.fecha, descripcion:nuevaTarea.descripcion})
-      }).then(r=>r.json()).then(r=>{ if(r.calendarId){ nuevaTarea.calendarId=r.calendarId; guardarTodo(); }}).catch(e=>console.log(e));
+      }).then(r=>r.json()).then(r=>{ 
+      console.log('Tarea Calendar respuesta:', JSON.stringify(r));
+      if(r.calendarId){ nuevaTarea.calendarId=r.calendarId; guardarTodo(); }
+      }).catch(e=>console.log('Error tarea:', e));
     }
   } else if (modalTipo === 'reunion') {
     const nuevaReunion = {id:Date.now(), titulo:nombre, fecha:document.getElementById('f-fecha').value, hora:document.getElementById('f-hora').value, duracion:document.getElementById('f-duracion').value, tipo:document.getElementById('f-tipo').value, lugar:document.getElementById('f-lugar').value, notas:document.getElementById('f-notas').value, asistentes:['todos']};
@@ -887,7 +890,13 @@ async function guardarItem() {
     fetch(API_URL, {
       method:'POST',
       body: JSON.stringify({accion:'crearEvento', titulo:nuevoEvento.titulo, dia:nuevoEvento.dia, horaInicio:nuevoEvento.horaInicio, horaFin:nuevoEvento.horaFin, tipo:nuevoEvento.tipo})
-    }).then(r=>r.json()).then(r=>{ if(r.calendarId){ nuevoEvento.calendarId=r.calendarId; guardarTodo(); }}).catch(e=>console.log(e));
+    }).then(r=>r.json()).then(r=>{ 
+      console.log('Evento Calendar respuesta:', JSON.stringify(r));
+      if(r.calendarId){ 
+        nuevoEvento.calendarId=r.calendarId;
+        guardarTodo();
+      }
+    }).catch(e=>console.log('Error evento:', e));
   }
 
   cerrarModal();
