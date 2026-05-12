@@ -668,7 +668,6 @@ function renderReuniones() {
     </div>`;
   }).join('');
 }
-
 function renderHorario() {
   const grid = document.getElementById('horario-grid');
   const hoy = new Date();
@@ -679,21 +678,68 @@ function renderHorario() {
   const horas = Array.from({length:14}, (_,i) => i+6);
   const fechaDom = new Date(lunes); fechaDom.setDate(lunes.getDate()+6);
   document.getElementById('semana-label').textContent = `${lunes.getDate()} ${lunes.toLocaleDateString('es',{month:'short'})} — ${fechaDom.getDate()} ${fechaDom.toLocaleDateString('es',{month:'short',year:'numeric'})}`;
+
+  // Construir fechas de la semana
+  const fechasSemana = Array.from({length:7}, (_,i) => {
+    const f = new Date(lunes);
+    f.setDate(lunes.getDate() + i);
+    return f.toISOString().split('T')[0];
+  });
+
+  // Reuniones de la semana indexadas por fecha y hora
+  const reunionesSemana = {};
+  reuniones.forEach(r => {
+    if (!r.fecha || !fechasSemana.includes(r.fecha)) return;
+    const horaNum = parseInt((r.hora||'00:00').split(':')[0]);
+    const key = `${r.fecha}_${horaNum}`;
+    if (!reunionesSemana[key]) reunionesSemana[key] = [];
+    reunionesSemana[key].push(r);
+  });
+
+  // Tareas de la semana indexadas por fecha (aparecen a las 9AM)
+  const tareasSemana = {};
+  tareas.forEach(t => {
+    if (!t.fecha || !fechasSemana.includes(t.fecha) || t.estado === 'completada') return;
+    const key = `${t.fecha}_9`;
+    if (!tareasSemana[key]) tareasSemana[key] = [];
+    tareasSemana[key].push(t);
+  });
+
   let html = '<div class="hora-header"></div>';
   dias.forEach((d,i) => {
     const fecha = new Date(lunes); fecha.setDate(lunes.getDate()+i);
     const esHoy = fecha.toDateString() === hoy.toDateString();
     html += `<div class="dia-header ${esHoy?'hoy':''}">${d}<br><small style="font-family:'DM Sans';font-weight:400;font-size:.7rem;opacity:.6">${fecha.getDate()}</small></div>`;
   });
+
   horas.forEach(h => {
     html += `<div class="hora-slot">${h}:00</div>`;
     for (let d=0; d<7; d++) {
+      const fechaDia = fechasSemana[d];
+      const key = `${fechaDia}_${h}`;
+
+      // Eventos fijos del horario
       const evs = eventos.filter(e => e.dia === d && e.horaInicio <= h && e.horaFin > h);
       const evsHTML = evs.map(e => {
         const cls = e.tipo==='reunion'?'ev-reunion':e.tipo==='carrera'?'ev-carrera':e.tipo==='entrega'?'ev-entrega':'ev-trabajo';
         return `<div class="evento ${cls}" onclick="borrarEvento(${e.id},event)">${e.titulo} <span style="opacity:.7;font-size:.65rem">✕</span></div>`;
       }).join('');
-      html += `<div class="evento-slot">${evsHTML}</div>`;
+
+      // Reuniones de la semana
+      const reunsHTML = (reunionesSemana[key]||[]).map(r => `
+        <div class="evento ev-reunion" title="${r.titulo} — ${r.hora} · ${r.lugar||''}">
+          🤝 ${r.titulo}
+        </div>`).join('');
+
+      // Tareas de la semana (solo a las 9AM)
+      const tareasHTML = (tareasSemana[key]||[]).map(t => {
+        const color = t.prioridad==='alta'?'ev-entrega':t.prioridad==='media'?'ev-carrera':'ev-trabajo';
+        return `<div class="evento ${color}" title="📋 ${t.nombre} — ${t.categoria||''}">
+          📋 ${t.nombre}
+        </div>`;
+      }).join('');
+
+      html += `<div class="evento-slot">${evsHTML}${reunsHTML}${tareasHTML}</div>`;
     }
   });
   grid.innerHTML = html;
