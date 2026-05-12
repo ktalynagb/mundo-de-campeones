@@ -392,7 +392,7 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--gris-osc
 
 <script>
 // ══ CONFIG ══
-const API_URL = 'https://script.google.com/macros/s/AKfycbzK3_Mt_V4CHQ2v28jKqQugoKMHJqEdkq_zVsexHMRh5qrEvX6rc8bCj9hH5xNRrW_s/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbzGrRV39SpGZtXn3vAhMAaUTF9O_VQJEUurB9zNtVX_IlzhC_Mv1-coPbPDx4L1M-Jp/exec';
 
 const EQUIPO = [
   {id:'mama',  nombre:'Mamá',    color:'#FFD700', inicial:'MA'},
@@ -450,12 +450,12 @@ async function apiGuardar(hoja, datos) {
 
 // ══ SERIALIZAR / DESERIALIZAR ══
 function tareasAFilas(lista) {
-  return lista.map(t => [t.id, t.nombre, t.descripcion||'', t.encargado, t.prioridad, t.estado, t.fecha, t.categoria||'General']);
+  return lista.map(t => [t.id, t.nombre, t.descripcion||'', t.encargado, t.prioridad, t.estado, t.fecha, t.categoria||'General', t.calendarId||'']);
 }
 function filasATareas(filas) {
   return filas.filter(f => f[0]).map(f => ({
     id: f[0], nombre: f[1], descripcion: f[2], encargado: f[3],
-    prioridad: f[4], estado: f[5], fecha: excelFechaAStr(f[6]), categoria: f[7]
+    prioridad: f[4], estado: f[5], fecha: excelFechaAStr(f[6]), categoria: f[7], calendarId: f[8]||''
   }));
 }
 
@@ -485,12 +485,12 @@ function filasAReuniones(filas) {
 }
 
 function eventosAFilas(lista) {
-  return lista.map(e => [e.id, e.titulo, e.dia, e.horaInicio, e.horaFin, e.tipo, e.encargado]);
+  return lista.map(e => [e.id, e.titulo, e.dia, e.horaInicio, e.horaFin, e.tipo, e.encargado, e.calendarId||'']);
 }
 function filasAEventos(filas) {
   return filas.filter(f => f[0]).map(f => ({
     id: f[0], titulo: f[1], dia: Number(f[2]), horaInicio: Number(f[3]),
-    horaFin: Number(f[4]), tipo: f[5], encargado: f[6]
+    horaFin: Number(f[4]), tipo: f[5], encargado: f[6], calendarId: f[7]||''
   }));
 }
 
@@ -727,6 +727,8 @@ async function toggleTarea(id) {
 
 async function borrarTarea(id) {
   if (!confirm('¿Borrar esta tarea?')) return;
+  const t = tareas.find(x=>x.id==id);
+  if (t?.calendarId) fetch(API_URL, {method:'POST', body:JSON.stringify({accion:'borrarCalendar', calendarId:t.calendarId})}).catch(()=>{});
   tareas = tareas.filter(t=>t.id!=id);
   renderTodo();
   await guardarTodo();
@@ -735,6 +737,8 @@ async function borrarTarea(id) {
 async function borrarEvento(id, e) {
   e.stopPropagation();
   if (!confirm('¿Borrar este evento del horario?')) return;
+  const ev = eventos.find(x=>x.id==id);
+  if (ev?.calendarId) fetch(API_URL, {method:'POST', body:JSON.stringify({accion:'borrarCalendar', calendarId:ev.calendarId})}).catch(()=>{});
   eventos = eventos.filter(ev => ev.id != id);
   renderHorario();
   await guardarTodo();
@@ -742,6 +746,8 @@ async function borrarEvento(id, e) {
 
 async function borrarReunion(id) {
   if (!confirm('¿Borrar esta reunión?')) return;
+  const r = reuniones.find(x=>x.id==id);
+  if (r?.calendarId) fetch(API_URL, {method:'POST', body:JSON.stringify({accion:'borrarCalendar', calendarId:r.calendarId})}).catch(()=>{});
   reuniones = reuniones.filter(r=>r.id!=id);
   renderTodo();
   await guardarTodo();
@@ -855,7 +861,7 @@ async function guardarItem() {
       fetch(API_URL, {
         method:'POST',
         body: JSON.stringify({accion:'crearTarea', titulo:nuevaTarea.nombre, fecha:nuevaTarea.fecha, descripcion:nuevaTarea.descripcion})
-      }).then(r=>r.json()).then(r=>console.log('Tarea Calendar:', JSON.stringify(r))).catch(e=>console.log(e));
+      }).then(r=>r.json()).then(r=>{ if(r.calendarId){ nuevaTarea.calendarId=r.calendarId; guardarTodo(); }}).catch(e=>console.log(e));
     }
   } else if (modalTipo === 'reunion') {
     const nuevaReunion = {id:Date.now(), titulo:nombre, fecha:document.getElementById('f-fecha').value, hora:document.getElementById('f-hora').value, duracion:document.getElementById('f-duracion').value, tipo:document.getElementById('f-tipo').value, lugar:document.getElementById('f-lugar').value, notas:document.getElementById('f-notas').value, asistentes:['todos']};
@@ -874,7 +880,7 @@ async function guardarItem() {
       })
     })
     .then(r => r.json())
-    .then(r => console.log('Calendar respuesta:', JSON.stringify(r)))
+    .then(r=>{ if(r.calendarId){ nuevaReunion.calendarId=r.calendarId; guardarTodo(); }})
     .catch(err => console.log('Calendar error:', err));
   } else if (modalTipo === 'evento') {
     const nuevoEvento = {id:Date.now(), titulo:nombre, dia:parseInt(document.getElementById('f-dia').value), horaInicio:parseInt(document.getElementById('f-hora-inicio').value), horaFin:parseInt(document.getElementById('f-hora-fin').value), tipo:document.getElementById('f-tipo').value, encargado:document.getElementById('f-encargado').value};
@@ -882,7 +888,7 @@ async function guardarItem() {
     fetch(API_URL, {
       method:'POST',
       body: JSON.stringify({accion:'crearEvento', titulo:nuevoEvento.titulo, dia:nuevoEvento.dia, horaInicio:nuevoEvento.horaInicio, horaFin:nuevoEvento.horaFin, tipo:nuevoEvento.tipo})
-    }).then(r=>r.json()).then(r=>console.log('Evento Calendar:', JSON.stringify(r))).catch(e=>console.log(e));
+    }).then(r=>r.json()).then(r=>{ if(r.calendarId){ nuevoEvento.calendarId=r.calendarId; guardarTodo(); }}).catch(e=>console.log(e));
   }
 
   cerrarModal();
