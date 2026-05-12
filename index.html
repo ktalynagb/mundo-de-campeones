@@ -267,6 +267,11 @@ footer{background:#070e26;border-top:1px solid rgba(255,215,0,.1);padding:3rem 2
   .f-links{gap:1.25rem}
   section{padding:5rem 1.5rem}
 }
+.submenu{display:none;margin-top:.5rem;flex-wrap:wrap;gap:.4rem}
+.submenu.visible{display:flex}
+.fi-sub{background:transparent;border:1.5px solid rgba(255,255,255,.08);color:rgba(255,255,255,.5);padding:.3rem .85rem;border-radius:100px;font-size:.75rem;font-weight:500;font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s}
+.fi-sub:hover,.fi-sub.on{background:rgba(255,215,0,.15);border-color:var(--amarillo);color:var(--amarillo)}
+.fi-sub.on-genero{background:rgba(46,108,199,.2);border-color:var(--azul-claro);color:#93c5fd}
 </style>
 </head>
 <body>
@@ -355,12 +360,31 @@ footer{background:#070e26;border-top:1px solid rgba(255,215,0,.1);padding:3rem 2
   <div class="cat-head">
     <div><span class="label">Lo que encontrarás</span><h2 class="display cat-title">CATÁLOGO <span class="am">MC</span></h2></div>
     <div class="filtros">
-      <button class="fi on" data-cat="todos">Todos</button>
-      <button class="fi" data-cat="tenis">Tenis</button>
-      <button class="fi" data-cat="ropa">Ropa</button>
-      <button class="fi" data-cat="lifestyle">Lifestyle</button>
-      <button class="fi" data-cat="accesorios">Accesorios</button>
-      <button class="fi" data-cat="kits">Kits</button>
+      <button class="fi on" data-cat="todos" onclick="selCat('todos',this)">Todos</button>
+      <button class="fi" data-cat="tenis" onclick="selCat('tenis',this)">Tenis</button>
+      <button class="fi" data-cat="ropa" onclick="selCat('ropa',this)">Ropa</button>
+      <button class="fi" data-cat="lifestyle" onclick="selCat('lifestyle',this)">Lifestyle</button>
+      <button class="fi" data-cat="accesorios" onclick="selCat('accesorios',this)">Accesorios</button>
+      <button class="fi" data-cat="kits" onclick="selCat('kits',this)">Kits</button>
+    </div>
+    <div class="submenu" id="submenu-marcas">
+      <button class="fi-sub" data-marca="todas" onclick="selMarca('todas',this)">Todas las marcas</button>
+      <button class="fi-sub" data-marca="nike" onclick="selMarca('nike',this)">Nike</button>
+      <button class="fi-sub" data-marca="adidas" onclick="selMarca('adidas',this)">Adidas</button>
+      <button class="fi-sub" data-marca="new balance" onclick="selMarca('new balance',this)">New Balance</button>
+      <button class="fi-sub" data-marca="under armour" onclick="selMarca('under armour',this)">Under Armour</button>
+      <button class="fi-sub" data-marca="puma" onclick="selMarca('puma',this)">Puma</button>
+      <button class="fi-sub" data-marca="asics" onclick="selMarca('asics',this)">Asics</button>
+      <button class="fi-sub" data-marca="brooks" onclick="selMarca('brooks',this)">Brooks</button>
+      <button class="fi-sub" data-marca="hoka" onclick="selMarca('hoka',this)">Hoka</button>
+      <button class="fi-sub" data-marca="saucony" onclick="selMarca('saucony',this)">Saucony</button>
+      <button class="fi-sub" data-marca="on running" onclick="selMarca('on running',this)">On Running</button>
+    </div>
+    <div class="submenu" id="submenu-genero">
+      <button class="fi-sub on-genero" data-genero="todos" onclick="selGenero('todos',this)">Todos</button>
+      <button class="fi-sub" data-genero="hombre" onclick="selGenero('hombre',this)">Hombre</button>
+      <button class="fi-sub" data-genero="mujer" onclick="selGenero('mujer',this)">Mujer</button>
+      <button class="fi-sub" data-genero="unisex" onclick="selGenero('unisex',this)">Unisex</button>
     </div>
   </div>
   <div class="cat-grid" id="cat-grid">
@@ -539,9 +563,15 @@ async function cargarCatalogo() {
 
 function renderCatalogo() {
   const grid = document.querySelector('.cat-grid');
-  const productos = filtroActivo === 'todos'
+  let productos = filtroActivo === 'todos'
     ? todosLosProductos
     : todosLosProductos.filter(p => (p.categoria||'').toLowerCase().includes(filtroActivo));
+  if (filtroMarca && filtroMarca !== 'todas') {
+    productos = productos.filter(p => (p.marca||'').toLowerCase().includes(filtroMarca));
+  }
+  if (filtroGenero && filtroGenero !== 'todos') {
+    productos = productos.filter(p => (p.genero||'').toLowerCase().includes(filtroGenero));
+  }
   if (!productos.length) {
     grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:rgba(255,255,255,.5)">No hay productos en esta categoría.</div>';
     return;
@@ -584,14 +614,43 @@ function renderCatalogo() {
   }).join('');
 }
 
-document.querySelectorAll('.fi').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.fi').forEach(b => b.classList.remove('on'));
-    btn.classList.add('on');
-    filtroActivo = btn.dataset.cat;
-    renderCatalogo();
-  });
-});
+let filtroMarca = 'todas';
+let filtroGenero = 'todos';
+
+function selCat(cat, el) {
+  document.querySelectorAll('.fi').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+  filtroActivo = cat;
+  filtroMarca = 'todas';
+  filtroGenero = 'todos';
+  const subMarcas = document.getElementById('submenu-marcas');
+  const subGenero = document.getElementById('submenu-genero');
+  document.querySelectorAll('#submenu-marcas .fi-sub').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('#submenu-genero .fi-sub').forEach(b => b.classList.remove('on-genero'));
+  document.querySelector('#submenu-genero .fi-sub[data-genero="todos"]').classList.add('on-genero');
+  if (cat !== 'todos' && cat !== 'kits') {
+    subMarcas.classList.add('visible');
+  } else {
+    subMarcas.classList.remove('visible');
+    subGenero.classList.remove('visible');
+  }
+  renderCatalogo();
+}
+
+function selMarca(marca, el) {
+  document.querySelectorAll('#submenu-marcas .fi-sub').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+  filtroMarca = marca;
+  document.getElementById('submenu-genero').classList.add('visible');
+  renderCatalogo();
+}
+
+function selGenero(genero, el) {
+  document.querySelectorAll('#submenu-genero .fi-sub').forEach(b => b.classList.remove('on-genero'));
+  el.classList.add('on-genero');
+  filtroGenero = genero;
+  renderCatalogo();
+}
 
 const st = document.createElement('style');
 st.textContent = '@keyframes spin{to{transform:rotate(360deg)}}';
