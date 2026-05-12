@@ -343,6 +343,15 @@ footer{background:#070e26;border-top:1px solid rgba(255,215,0,.1);padding:3rem 2
   </div>
 </section>
 
+<!-- CARRERAS -->
+<section id="carreras" style="padding:4rem 2.5rem;background:#0a1020;position:relative">
+  <div class="inner">
+    <h2 class="display" style="font-size:clamp(2rem,5vw,4rem);margin-bottom:.5rem">CALENDARIO DE <span style="color:var(--amarillo)">CARRERAS</span></h2>
+    <p style="color:var(--muted);font-size:.9rem;margin-bottom:2rem">Carreras nacionales y locales del año — actualizado por el equipo MC</p>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:2rem" id="meses-btns"></div>
+    <div id="carreras-grid"></div>
+  </div>
+</section>
 
 <!-- PROPUESTA -->
 <section id="propuesta"><div class="inner">
@@ -661,6 +670,114 @@ const obs = new IntersectionObserver(entries => {
 }, {threshold:.1});
 document.querySelectorAll('.rev').forEach(el => obs.observe(el));
 
+// ── CARRERAS ──
+const CARRERAS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTkyKHX1Ka1wMOwNj7sbwQaEMkIEV7A3j88Y_b4Rt0DeljeOXkuLPpLJlLIF4plvHlivbA3W8q_TOy9/pub?gid=737343920&single=true&output=csv';
+const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+const MESES_FULL = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+let todasLasCarreras = [];
+let mesFiltro = new Date().getMonth();
+
+async function cargarCarreras() {
+  try {
+    const res = await fetch(CARRERAS_URL);
+    const texto = await res.text();
+    const filas = texto.trim().split('\n').map(f => {
+      const resultado = [];
+      let dentro = false, celda = '';
+      for (let c of f) {
+        if (c === '"') { dentro = !dentro; }
+        else if (c === ',' && !dentro) { resultado.push(celda.trim()); celda = ''; }
+        else { celda += c; }
+      }
+      resultado.push(celda.trim());
+      return resultado;
+    });
+    const headers = filas[0].map(h => h.toLowerCase().trim());
+    todasLasCarreras = filas.slice(1).filter(f => f.some(c => c)).map(fila => {
+      const obj = {};
+      headers.forEach((h, i) => obj[h] = (fila[i] || '').trim());
+      return obj;
+    });
+    renderMeses();
+    renderCarreras();
+  } catch(e) { console.log('Error cargando carreras:', e); }
+}
+
+function renderMeses() {
+  const cont = document.getElementById('meses-btns');
+  if (!cont) return;
+  cont.innerHTML = MESES.map((m, i) => `
+    <button onclick="selMes(${i})" id="mes-btn-${i}"
+      style="background:${i===mesFiltro?'var(--amarillo)':'transparent'};
+             color:${i===mesFiltro?'var(--azul-oscuro)':'var(--muted)'};
+             border:1.5px solid ${i===mesFiltro?'var(--amarillo)':'rgba(255,255,255,.12)'};
+             padding:.35rem .9rem;border-radius:100px;font-size:.8rem;font-weight:600;
+             font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s">
+      ${m}
+    </button>`).join('');
+}
+
+function selMes(i) {
+  mesFiltro = i;
+  renderMeses();
+  renderCarreras();
+}
+
+function renderCarreras() {
+  const cont = document.getElementById('carreras-grid');
+  if (!cont) return;
+  const lista = todasLasCarreras.filter(c => {
+    if (!c.fecha) return false;
+    const partes = c.fecha.split('/');
+    if (partes.length < 2) return false;
+    const mes = parseInt(partes[1]) - 1;
+    return mes === mesFiltro;
+  }).sort((a, b) => {
+    const da = parseInt((a.fecha||'').split('/')[0]);
+    const db = parseInt((b.fecha||'').split('/')[0]);
+    return da - db;
+  });
+
+  if (!lista.length) {
+    cont.innerHTML = `<div style="text-align:center;padding:3rem;color:var(--muted)">
+      <div style="font-size:2rem;margin-bottom:.75rem">🏃</div>
+      <div style="font-size:.9rem">No hay carreras registradas para ${MESES_FULL[mesFiltro]}</div>
+    </div>`;
+    return;
+  }
+
+  cont.innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:.75rem">
+      ${lista.map(c => {
+        const dia = (c.fecha||'').split('/')[0];
+        const esLocal = (c.tipo||'').toLowerCase() === 'local';
+        return `
+        <div style="background:var(--gris);border:1px solid ${esLocal?'rgba(255,215,0,.2)':'rgba(255,255,255,.08)'};
+             border-radius:14px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1.25rem;
+             transition:border-color .2s,transform .2s" 
+             onmouseover="this.style.transform='translateY(-2px)';this.style.borderColor='rgba(255,215,0,.35)'"
+             onmouseout="this.style.transform='';this.style.borderColor='${esLocal?'rgba(255,215,0,.2)':'rgba(255,255,255,.08)'}'">
+          <div style="min-width:52px;text-align:center;background:${esLocal?'rgba(255,215,0,.1)':'rgba(46,108,199,.15)'};
+               border-radius:10px;padding:.5rem;border:1px solid ${esLocal?'rgba(255,215,0,.2)':'rgba(46,108,199,.2)'}">
+            <div style="font-family:'Archivo Black',sans-serif;font-size:1.5rem;font-weight:800;
+                 color:${esLocal?'var(--amarillo)':'#93c5fd'};line-height:1">${dia}</div>
+            <div style="font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">${MESES[mesFiltro]}</div>
+          </div>
+          <div style="flex:1">
+            <div style="font-weight:700;font-size:.95rem;color:var(--blanco);margin-bottom:.2rem">${c.carrera||'Sin nombre'}</div>
+            <div style="display:flex;gap:1rem;flex-wrap:wrap">
+              <span style="font-size:.78rem;color:var(--muted)">📍 ${c.lugar||'Por confirmar'}</span>
+              ${c.distancias ? `<span style="font-size:.78rem;color:var(--muted)">🏅 ${c.distancias}</span>` : ''}
+            </div>
+          </div>
+          <span style="font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+               padding:.2rem .65rem;border-radius:100px;
+               background:${esLocal?'rgba(255,215,0,.1)':'rgba(46,108,199,.15)'};
+               color:${esLocal?'var(--amarillo)':'#93c5fd'}">${esLocal?'Local':'Nacional'}</span>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
 // ── VIDEO DESDE SHEET ──
 async function cargarVideo() {
   try {
@@ -769,6 +886,7 @@ async function cargarVideo() {
 
 cargarVideo();
 cargarCatalogo();
+cargarCarreras();
 </script>
 </body>
 </html>
