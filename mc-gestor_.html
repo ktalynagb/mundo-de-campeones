@@ -700,6 +700,7 @@ function renderHorario() {
     if (!r.fecha || !fechasSemana.includes(r.fecha)) return;
     const horaNum = parseInt((r.hora||'00:00').split(':')[0]);
     const key = `${r.fecha}_${horaNum}`;
+    console.log('Agregando reunion al horario:', key, r.titulo);
     if (!reunionesSemana[key]) reunionesSemana[key] = [];
     reunionesSemana[key].push(r);
   });
