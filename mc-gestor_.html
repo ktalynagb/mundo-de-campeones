@@ -683,7 +683,7 @@ function renderHorario() {
   const dia = hoy.getDay() || 7;
   lunes.setDate(hoy.getDate() - dia + 1 + semanaOffset * 7);
   const dias = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
-  const horas = Array.from({length:14}, (_,i) => i+6);
+  const horas = Array.from({length:17}, (_,i) => i+6);
   const fechaDom = new Date(lunes); fechaDom.setDate(lunes.getDate()+6);
   document.getElementById('semana-label').textContent = `${lunes.getDate()} ${lunes.toLocaleDateString('es',{month:'short'})} — ${fechaDom.getDate()} ${fechaDom.toLocaleDateString('es',{month:'short',year:'numeric'})}`;
 
