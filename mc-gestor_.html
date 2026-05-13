@@ -697,6 +697,7 @@ function renderHorario() {
   // Reuniones de la semana indexadas por fecha y hora
   const reunionesSemana = {};
   reuniones.forEach(r => {
+    console.log('revisando reunion:', r.fecha, 'en semana:', fechasSemana, 'incluye?', fechasSemana.includes(r.fecha));
     if (!r.fecha || !fechasSemana.includes(r.fecha)) return;
     const horaNum = parseInt((r.hora||'00:00').split(':')[0]);
     const key = `${r.fecha}_${horaNum}`;
