@@ -641,7 +641,10 @@ function renderTareas() {
       </div>
       <span class="tarea-prioridad p-${t.prioridad}">${t.prioridad}</span>
       <div class="tarea-asignado">
-        <div style="width:28px;height:28px;border-radius:50%;background:${miembro.color}22;color:${miembro.color};display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;border:1.5px solid ${miembro.color}55">${miembro.inicial}</div>
+        ${(t.encargados&&t.encargados.length>0?t.encargados:[t.encargado]).map(eid => {
+        const mb = EQUIPO.find(m=>m.id===eid)||EQUIPO[3];
+        return `<div style="width:28px;height:28px;border-radius:50%;background:${mb.color}22;color:${mb.color};display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;border:1.5px solid ${mb.color}55;margin-left:-6px">${mb.inicial}</div>`;
+        }).join('')}
       </div>
       <div class="tarea-acciones">
         <button class="btn-icon" onclick="editarTarea(${t.id})">✏️</button>
@@ -839,7 +842,19 @@ function abrirModal(tipo) {
       <div class="form-group"><label class="form-label">Nombre *</label><input class="form-input" id="f-nombre" value="${tarea?.nombre||''}"></div>
       <div class="form-group"><label class="form-label">Descripción</label><textarea class="form-textarea" id="f-desc">${tarea?.descripcion||''}</textarea></div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Encargado</label><select class="form-select" id="f-encargado">${equipoOpts}</select></div>
+        <div class="form-group">
+          <label class="form-label">Encargados</label>
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.25rem">
+            ${EQUIPO.map(m => `
+              <label style="display:flex;align-items:center;gap:.4rem;cursor:pointer;background:var(--gris-osc);border:1.5px solid var(--borde);border-radius:8px;padding:.4rem .75rem;transition:border-color .15s" 
+                     onmouseover="this.style.borderColor='var(--am)'" onmouseout="this.style.borderColor=this.querySelector('input').checked?'var(--am)':'var(--borde)'">
+                <input type="checkbox" id="enc-${m.id}" value="${m.id}" 
+                       style="accent-color:var(--am);width:14px;height:14px"
+                       ${tarea?.encargados?.includes(m.id) || tarea?.encargado===m.id ? 'checked' : ''}>
+                <span style="font-size:.82rem;font-weight:600;color:${m.color}">${m.nombre}</span>
+              </label>`).join('')}
+          </div>
+        </div>
         <div class="form-group"><label class="form-label">Categoría</label><select class="form-select" id="f-cat"><option>Ventas</option><option>Stock</option><option>Redes</option><option>Web</option><option>Comunidad</option><option>Contenido</option><option>General</option></select></div>
       </div>
       <div class="form-row">
@@ -847,7 +862,6 @@ function abrirModal(tipo) {
         <div class="form-group"><label class="form-label">Fecha límite</label><input class="form-input" type="date" id="f-fecha" value="${tarea?.fecha||new Date().toISOString().split('T')[0]}"></div>
       </div>`;
     if (tarea) setTimeout(() => {
-      document.getElementById('f-encargado').value = tarea.encargado;
       document.getElementById('f-cat').value = tarea.categoria;
       document.getElementById('f-prioridad').value = tarea.prioridad;
     }, 10);
@@ -900,13 +914,15 @@ async function guardarItem() {
       const t = tareas.find(x=>x.id==editId);
       t.nombre = nombre;
       t.descripcion = document.getElementById('f-desc').value;
-      t.encargado = document.getElementById('f-encargado').value;
+      const encs = EQUIPO.filter(m => document.getElementById('enc-'+m.id)?.checked).map(m => m.id);
+      t.encargado = encs[0]||'todos';
+      t.encargados = encs;
       t.categoria = document.getElementById('f-cat').value;
       t.prioridad = document.getElementById('f-prioridad').value;
       t.fecha = document.getElementById('f-fecha').value;
     } else {
-      const nuevaTarea = {id:Date.now(), nombre, descripcion:document.getElementById('f-desc').value, encargado:document.getElementById('f-encargado').value, categoria:document.getElementById('f-cat').value, prioridad:document.getElementById('f-prioridad').value, estado:'pendiente', fecha:document.getElementById('f-fecha').value};
-      tareas.push(nuevaTarea);
+      const encargadosSeleccionados = EQUIPO.filter(m => document.getElementById('enc-'+m.id)?.checked).map(m => m.id);
+      const nuevaTarea = {id:Date.now(), nombre, descripcion:document.getElementById('f-desc').value, encargado:encargadosSeleccionados[0]||'todos', encargados:encargadosSeleccionados, categoria:document.getElementById('f-cat').value, prioridad:document.getElementById('f-prioridad').value, estado:'pendiente', fecha:document.getElementById('f-fecha').value, calendarId:''};      tareas.push(nuevaTarea);
       fetch(API_URL, {
         method:'POST',
         body: JSON.stringify({accion:'crearTarea', titulo:nuevaTarea.nombre, fecha:nuevaTarea.fecha, descripcion:nuevaTarea.descripcion})
