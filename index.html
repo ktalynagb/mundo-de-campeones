@@ -747,33 +747,39 @@ function renderCarreras() {
   }
 
   cont.innerHTML = `
-    <div style="display:flex;flex-direction:column;gap:.75rem">
-      ${lista.map(c => {
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:.4rem">
+      ${lista.map((c, idx) => {
         const dia = (c.fecha||'').split('/')[0];
         const esLocal = (c.tipo||'').toLowerCase() === 'local';
+        const num = String(idx+1).padStart(2,'0');
         return `
-        <div style="background:var(--gris);border:1px solid ${esLocal?'rgba(255,215,0,.2)':'rgba(255,255,255,.08)'};
-             border-radius:14px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1.25rem;
-             transition:border-color .2s,transform .2s" 
-             onmouseover="this.style.transform='translateY(-2px)';this.style.borderColor='rgba(255,215,0,.35)'"
-             onmouseout="this.style.transform='';this.style.borderColor='${esLocal?'rgba(255,215,0,.2)':'rgba(255,255,255,.08)'}'">
-          <div style="min-width:52px;text-align:center;background:${esLocal?'rgba(255,215,0,.1)':'rgba(46,108,199,.15)'};
-               border-radius:10px;padding:.5rem;border:1px solid ${esLocal?'rgba(255,215,0,.2)':'rgba(46,108,199,.2)'}">
-            <div style="font-family:'Archivo Black',sans-serif;font-size:1.5rem;font-weight:800;
-                 color:${esLocal?'var(--amarillo)':'#93c5fd'};line-height:1">${dia}</div>
-            <div style="font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">${MESES[mesFiltro]}</div>
+        <div style="display:grid;grid-template-columns:56px 4px 1fr;align-items:stretch;
+             background:var(--gris);border-radius:8px;overflow:hidden;
+             transition:transform .2s,filter .2s;cursor:default"
+             onmouseover="this.style.transform='translateX(4px)';this.style.filter='brightness(1.15)'"
+             onmouseout="this.style.transform='';this.style.filter=''">
+          <!-- Número y fecha -->
+          <div style="background:#0a1020;display:flex;flex-direction:column;align-items:center;
+               justify-content:center;padding:.75rem .5rem;gap:.15rem">
+            <div style="font-family:'Archivo Black',sans-serif;font-size:.65rem;font-weight:800;
+                 color:${esLocal?'var(--amarillo)':'rgba(255,255,255,.3)'};letter-spacing:.1em">R${num}</div>
+            <div style="font-family:'Archivo Black',sans-serif;font-size:1.4rem;font-weight:800;
+                 color:var(--blanco);line-height:1">${dia}</div>
+            <div style="font-size:.6rem;color:var(--muted);text-transform:uppercase;
+                 letter-spacing:.08em">${MESES[mesFiltro]}</div>
           </div>
-          <div style="flex:1">
-            <div style="font-weight:700;font-size:.95rem;color:var(--blanco);margin-bottom:.2rem">${c.carrera||'Sin nombre'}</div>
-            <div style="display:flex;gap:1rem;flex-wrap:wrap">
-              <span style="font-size:.78rem;color:var(--muted)">📍 ${c.lugar||'Por confirmar'}</span>
-              ${c.distancias ? `<span style="font-size:.78rem;color:var(--muted)">🏅 ${c.distancias}</span>` : ''}
-            </div>
+          <!-- Barra lateral -->
+          <div style="background:${esLocal?'var(--amarillo)':'var(--azul-claro)'};width:4px"></div>
+          <!-- Info -->
+          <div style="padding:.75rem 1rem;display:flex;flex-direction:column;justify-content:center;gap:.1rem">
+            ${c.distancias?`<div style="font-size:.62rem;color:${esLocal?'var(--amarillo)':'#93c5fd'};
+                 font-weight:700;letter-spacing:.1em;text-transform:uppercase">${c.distancias}</div>`:''}
+            <div style="font-family:'Archivo Black',sans-serif;font-size:.95rem;font-weight:800;
+                 color:${esLocal?'var(--amarillo)':'#93c5fd'};letter-spacing:.02em;
+                 text-transform:uppercase">${c.carrera||'Sin nombre'}</div>
+            <div style="font-size:.78rem;color:rgba(255,255,255,.6);font-weight:500;
+                 letter-spacing:.05em;text-transform:uppercase">${c.lugar||'Por confirmar'}</div>
           </div>
-          <span style="font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
-               padding:.2rem .65rem;border-radius:100px;
-               background:${esLocal?'rgba(255,215,0,.1)':'rgba(46,108,199,.15)'};
-               color:${esLocal?'var(--amarillo)':'#93c5fd'}">${esLocal?'Local':'Nacional'}</span>
         </div>`;
       }).join('')}
     </div>`;
