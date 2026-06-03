@@ -632,7 +632,7 @@ function renderCatalogo() {
     }
     const fotoHTML = urlFoto && urlFoto.startsWith('http')
       ? `<img src="${urlFoto}" alt="${p.nombre}" loading="lazy" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0">`
-      : `<span class="cc-icon">${icono}</span><span class="cc-sub">Foto próximamente</span>`;
+      : `<span class="cc-icon">${icono}</span><span class="cc-sub">Prepárate para ver artículos exclusivos</span>`;
     const msg = encodeURIComponent(`Hola MC 🏆 Me interesa: *${p.nombre}*. ¿Tienen disponibilidad?`);
     return `
     <div class="cc vis" data-categoria="${cat}" style="animation-delay:${i*.05}s">
