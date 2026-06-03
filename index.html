@@ -611,7 +611,7 @@ function renderCatalogo() {
     productos = productos.filter(p => (p.genero||'').toLowerCase().includes(filtroGenero));
   }
   if (!productos.length) {
-    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:rgba(255,255,255,.5)">No hay productos en esta categoría.</div>';
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:rgba(255,255,255,.5)">Próximamente artículos exclusivos.</div>';
     return;
   }
   grid.innerHTML = productos.map((p, i) => {
@@ -632,7 +632,7 @@ function renderCatalogo() {
     }
     const fotoHTML = urlFoto && urlFoto.startsWith('http')
       ? `<img src="${urlFoto}" alt="${p.nombre}" loading="lazy" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0">`
-      : `<span class="cc-icon">${icono}</span><span class="cc-sub">Prepárate para ver artículos exclusivos</span>`;
+      : `<span class="cc-icon">${icono}</span><span class="cc-sub">Foto próximamente</span>`;
     const msg = encodeURIComponent(`Hola MC 🏆 Me interesa: *${p.nombre}*. ¿Tienen disponibilidad?`);
     return `
     <div class="cc vis" data-categoria="${cat}" style="animation-delay:${i*.05}s">
