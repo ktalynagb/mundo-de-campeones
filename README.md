@@ -9,6 +9,7 @@ Marca deportiva familiar runner · Popayán, Colombia
 | Recurso | Link | Acceso |
 |---|---|---|
 | 🌐 Landing page pública | [ktalynagb.github.io/mundo-de-campeones](https://ktalynagb.github.io/mundo-de-campeones/) | Público |
+| 🌐 Landing page pública oficial | (https://mundodecampeones.netlify.app/) | Público |
 | 🔒 Gestor operativo | [mc-gestor_.html](https://ktalynagb.github.io/mundo-de-campeones/mc-gestor_.html) | Privado (login) |
 | 📊 Google Sheets catálogo | [Abrir Sheet](https://docs.google.com/spreadsheets/d/1CpV-uz_x5UQ2f3UUI7GNUUc_Alq0s8PSd1cXxgPoixk/edit?usp=sharing) | Equipo MC |
 
